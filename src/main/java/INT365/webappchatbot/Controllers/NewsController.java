@@ -28,7 +28,7 @@ public class NewsController {
                 .build();
     }
 
-    @GetMapping("")
+    @GetMapping("/")
     public ResponseModel<Object> getNewsById(@RequestParam("newsId") Long newsId) {
         return ResponseModel.builder()
                 .responseCode(ModelConstant.OK.getCode())

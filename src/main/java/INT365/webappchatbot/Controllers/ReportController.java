@@ -26,7 +26,7 @@ public class ReportController {
                 .build();
     }
 
-    @GetMapping("")
+    @GetMapping("/")
     public ResponseModel<Object> getReportById(@RequestParam("reportId") Long reportId) {
         return ResponseModel.builder()
                 .responseCode(ModelConstant.OK.getCode())
