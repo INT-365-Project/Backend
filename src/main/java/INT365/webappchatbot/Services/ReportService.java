@@ -24,7 +24,7 @@ public class ReportService {
     }
 
     public ReportResponse getReportById(Long reportId) {
-        return ReportMapper.INSTANCE.createReportResponse(this.reportRepository.getById(reportId));
+        return ReportMapper.INSTANCE.createReportResponse(this.reportRepository.findById(reportId).get());
     }
 
     @Transactional
