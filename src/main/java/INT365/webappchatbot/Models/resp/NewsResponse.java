@@ -11,10 +11,10 @@ public class NewsResponse {
     private String title;
     private String detail;
     private String thumbnailPath;
-    @JsonFormat(pattern = "YYYY-MM-dd 24HH:MI:SS", timezone = "Asia/Bangkok")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "YYYY-MM-dd HH:MM:SS", timezone = "Asia/Bangkok")
     private Date createDate;
     private String createBy;
-    @JsonFormat(pattern = "YYYY-MM-dd 24HH:MI:SS", timezone = "Asia/Bangkok")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "YYYY-MM-dd HH:MM:SS", timezone = "Asia/Bangkok")
     private Date updateDate;
     private String updateBy;
 }

@@ -10,6 +10,6 @@ public class ReportResponse {
     private Long reportId;
     private String topic;
     private String description;
-    @JsonFormat(pattern = "YYYY-MM-dd 24HH:MI:SS", timezone = "Asia/Bangkok")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "YYYY-MM-dd HH:MM:SS", timezone = "Asia/Bangkok")
     private Date createDate;
 }
