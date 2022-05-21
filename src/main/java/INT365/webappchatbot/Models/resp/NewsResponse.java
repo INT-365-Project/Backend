@@ -8,6 +8,7 @@ import java.util.Date;
 @Data
 public class NewsResponse {
     private Long newId;
+    private String title;
     private String detail;
     private String thumbnailPath;
     @JsonFormat(pattern = "YYYY-MM-dd 24HH:MI:SS", timezone = "Asia/Bangkok")

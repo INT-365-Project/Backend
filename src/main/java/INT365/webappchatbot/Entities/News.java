@@ -16,10 +16,12 @@ import java.util.Date;
 @DynamicUpdate
 public class News {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "NEWS_SEQ")
-    @SequenceGenerator(sequenceName = "NEWS_SEQ", name = "NEWS_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "NEW_ID")
     private Long newId;
+
+    @Column(name = "TITLE")
+    private String title;
 
     @Column(name = "DETAIL")
     private String detail;

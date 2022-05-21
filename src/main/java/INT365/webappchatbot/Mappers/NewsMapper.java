@@ -23,6 +23,7 @@ public interface NewsMapper {
 
     @Mappings({
             @Mapping(source = "request.newId", target = "newId"),
+            @Mapping(source = "request.title", target = "title"),
             @Mapping(source = "request.detail", target = "detail"),
             @Mapping(source = "request.thumbnailPath", target = "thumbnailPath"),
             @Mapping(source = "date", target = "createDate"),

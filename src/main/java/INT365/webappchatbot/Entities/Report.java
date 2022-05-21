@@ -16,8 +16,7 @@ import java.util.Date;
 @DynamicUpdate
 public class Report {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REPORT_SEQ")
-    @SequenceGenerator(sequenceName = "REPORT_SEQ", name = "REPORT_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "REPORT_ID")
     private Long reportId;
 
