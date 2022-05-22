@@ -8,4 +8,5 @@ public class NewsRequest {
     private String title;
     private String detail;
     private String thumbnailPath;
+    private String thumbnailFile;
 }

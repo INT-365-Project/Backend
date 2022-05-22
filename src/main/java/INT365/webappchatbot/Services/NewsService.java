@@ -23,6 +23,7 @@ public class NewsService {
     @Transactional
     public Map<String, Long> createOrUpdateNews(NewsRequest request, UserModelDetail user) {
         Long newsId = this.newsRepository.saveAndFlush(NewsMapper.INSTANCE.createNews(request, new Date(), user.getFullName())).getNewId();
+        System.out.println(request.getThumbnailFile());
         Map<String, Long> map = new HashMap<>();
         map.put("newsId", newsId);
         return map;
