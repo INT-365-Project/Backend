@@ -6,7 +6,9 @@ import INT365.webappchatbot.Models.req.NewsRequest;
 import INT365.webappchatbot.Models.resp.NewsResponse;
 import INT365.webappchatbot.Repositories.NewsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.Date;
@@ -34,6 +36,12 @@ public class NewsService {
     }
 
     public NewsResponse getNewsById(Long newsId) {
+        this.newsRepository.findById(newsId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "news Id - not found"));
         return NewsMapper.INSTANCE.createNewsResponse(this.newsRepository.findById(newsId).get());
+    }
+
+    public void deleteNewsById(Long newsId) {
+        this.newsRepository.findById(newsId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "news Id - not found"));
+        this.newsRepository.deleteById(newsId);
     }
 }

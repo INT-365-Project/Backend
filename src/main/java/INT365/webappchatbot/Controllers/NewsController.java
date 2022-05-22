@@ -47,4 +47,14 @@ public class NewsController {
                 .responseData(this.newsService.createOrUpdateNews(request, user.getUserModelDetail()))
                 .build();
     }
+
+    @DeleteMapping("/deleteNews")
+    public ResponseModel<Object> deleteNewsById(@RequestParam("newsId") Long newsId){
+        this.newsService.deleteNewsById(newsId);
+        return ResponseModel.builder()
+                .responseCode(ModelConstant.OK.getCode())
+                .responseMessage(ModelConstant.OK.getMessage())
+                .responseData(null)
+                .build();
+    }
 }
