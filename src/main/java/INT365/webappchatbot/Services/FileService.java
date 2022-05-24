@@ -18,10 +18,10 @@ import java.util.Map;
 public class FileService {
 
     @Transactional
-    public Map<String, String> uploadFile(String fileName, String base64,String originalFileName) {
+    public Map<String, String> uploadFile(String fileName, String base64, String originalFileName) {
         Map<String, String> map = new HashMap<>();
         try {
-            String filePath = new File(".").getCanonicalPath() + "/src/main/resources/storage/profile/" + fileName + originalFileName.substring(originalFileName.lastIndexOf(".");
+            String filePath = new File(".").getCanonicalPath() + "/src/main/resources/storage/profile/" + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
             byte[] decodedBytes = Base64.getDecoder().decode(base64);
             Path path = Paths.get(filePath);
             Files.createDirectories(path.getParent());
