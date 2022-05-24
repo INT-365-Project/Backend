@@ -29,6 +29,9 @@ public class News {
     @Column(name = "THUMBNAIL_PATH")
     private String thumbnailPath;
 
+    @Column(name = "THUMBNAIL_FILE_NAME")
+    private String thumbnailFileName;
+
     @Column(name = "CREATE_DATE", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createDate;
