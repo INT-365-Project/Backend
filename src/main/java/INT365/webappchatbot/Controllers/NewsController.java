@@ -4,11 +4,14 @@ import INT365.webappchatbot.Constants.ModelConstant;
 import INT365.webappchatbot.Models.ResponseModel;
 import INT365.webappchatbot.Models.UserModel;
 import INT365.webappchatbot.Models.req.NewsRequest;
+import INT365.webappchatbot.Services.FileService;
 import INT365.webappchatbot.Services.JwtUserDetailService;
 import INT365.webappchatbot.Services.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @CrossOrigin("http://localhost:3000")
 @RestController
@@ -16,9 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class NewsController {
 
     @Autowired
-    JwtUserDetailService userDetailService;
+    private JwtUserDetailService userDetailService;
     @Autowired
     private NewsService newsService;
+    @Autowired
+    private FileService fileService;
 
     @GetMapping("")
     public ResponseModel<Object> getNews() {
@@ -49,7 +54,7 @@ public class NewsController {
     }
 
     @DeleteMapping("/deleteNews")
-    public ResponseModel<Object> deleteNewsById(@RequestParam("newsId") Long newsId){
+    public ResponseModel<Object> deleteNewsById(@RequestParam("newsId") Long newsId) {
         this.newsService.deleteNewsById(newsId);
         return ResponseModel.builder()
                 .responseCode(ModelConstant.OK.getCode())
