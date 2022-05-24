@@ -30,7 +30,7 @@ public class NewsService {
     public Map<String, Long> createOrUpdateNews(NewsRequest request, UserModelDetail user) {
         News news = this.newsRepository.saveAndFlush(NewsMapper.INSTANCE.createNews(request, new Date(), user.getFullName()));
         if (StringUtils.isNotEmpty(request.getThumbnailFile())) {
-            Map<String, String> map = this.fileService.uploadFile(news.getNewId().toString(), request.getThumbnailFile());
+            Map<String, String> map = this.fileService.uploadFile(news.getNewId().toString(), request.getThumbnailFile(), request.getThumbnailFileName());
             this.newsRepository.updateNewsFilePathByNewsId(news.getNewId(), map.get("filePath"));
         }
         Map<String, Long> map = new HashMap<>();
