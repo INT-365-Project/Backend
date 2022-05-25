@@ -32,10 +32,12 @@ public class NewsService {
         if (StringUtils.isNotEmpty(request.getThumbnailFile())) {
             if (StringUtils.isNotEmpty(news.getThumbnailPath())) {
                 this.fileService.deleteFile(news.getThumbnailPath());
-                this.newsRepository.updateNewsFilePathByNewsId(news.getNewId(), null);
+                news.setThumbnailPath(null);
             }
             Map<String, String> map = this.fileService.uploadFile(news.getNewId().toString(), request.getThumbnailFile(), request.getThumbnailFileName());
-            this.newsRepository.updateNewsFilePathByNewsId(news.getNewId(), map.get("filePath"));
+            news.setThumbnailPath(map.get("filePath"));
+            this.newsRepository.saveAndFlush(news);
+//            this.newsRepository.updateNewsFilePathByNewsId(news.getNewId(), map.get("filePath"));
         }
         Map<String, Long> map = new HashMap<>();
         map.put("newsId", news.getNewId());
@@ -52,7 +54,10 @@ public class NewsService {
     }
 
     public void deleteNewsById(Long newsId) {
-        this.newsRepository.findById(newsId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "news Id - not found"));
+        News news = this.newsRepository.findById(newsId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "news Id - not found"));
+        if (StringUtils.isNotEmpty(news.getThumbnailPath())) {
+            this.fileService.deleteFile(news.getThumbnailPath());
+        }
         this.newsRepository.deleteById(newsId);
     }
 }
