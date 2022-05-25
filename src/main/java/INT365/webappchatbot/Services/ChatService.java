@@ -32,6 +32,7 @@ public class ChatService {
             // check if old chat doesn't exist, create new one
             if (chat == null) {
                 Chat newChat = new Chat();
+                newChat.setChatId(null);
                 newChat.setName1(message.getSenderName());
                 newChat.setName2(message.getReceiverName());
                 newChat.setCreateDate(new Date());
