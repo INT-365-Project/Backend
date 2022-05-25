@@ -39,7 +39,7 @@ public class ChatService {
             }
             // create chat history
             ChatHistory chatHistory = new ChatHistory();
-            chatHistory.setChatId(chat.getChatId());
+            chatHistory.setChatId(chat.getChatId() == null ? null : chat.getChatId());
             chatHistory.setSenderName(message.getSenderName());
             chatHistory.setReceiverName(message.getReceiverName());
             chatHistory.setSentDate(message.getDate());
