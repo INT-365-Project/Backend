@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("http://20.92.229.38:80")
 @RestController
 @RequestMapping("/news")
 public class NewsController {

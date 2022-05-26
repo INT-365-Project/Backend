@@ -8,7 +8,7 @@ import INT365.webappchatbot.Services.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("http://20.92.229.38:80")
 @RestController
 @RequestMapping("/reports")
 public class ReportController {
