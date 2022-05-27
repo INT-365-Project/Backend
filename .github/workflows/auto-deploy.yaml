@@ -13,13 +13,13 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ghcr.io/int-365-project/backend:lastest
+          tags: ghcr.io/int-365-project/backend:latest
 
   deploy:
     needs:
