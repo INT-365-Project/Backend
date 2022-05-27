@@ -39,5 +39,6 @@ jobs:
           cd ./Backend
           docker-compose stop && docker-compose rm -f
           docker-compose pull
-          docker-compose up
+          docker-compose up -d
+          docker-compose restart -t 60 backend
           docker image prune -af
