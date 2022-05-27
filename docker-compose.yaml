@@ -1,7 +1,7 @@
-version: "3"
+version: '3'
 services:
   mysqldb:
-    image: mysql/mysql-server:latest
+    image: 'mysql/mysql-server:latest'
     container_name: database
     restart: on-failure
     environment:
@@ -10,23 +10,27 @@ services:
     ports:
       - '3306:3306'
     volumes:
-      - ./script.sql:/docker-entrypoint-initdb.d/1.sql
+      - './script.sql:/docker-entrypoint-initdb.d/1.sql'
     networks:
       project:
         ipv4_address: 172.99.99.3
   backend:
-    image: ghcr.io/int-365-project/backend:latest
+    image: 'ghcr.io/int-365-project/backend:latest'
     container_name: backend
     ports:
-        - 8081:8081
+      - '8081:8081'
     depends_on:
-        - mysqldb
+      - mysqldb
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:mysql://172.99.99.3:3306/int365'
+      SPRING_DATASOURCE_USERNAME: user-db1
+      SPRING_DATASOURCE_PASSWORD: 1234
     networks:
-       int365:
-          ipv4_address: 172.99.99.2
+      int365:
+        ipv4_address: 172.99.99.2
 networks:
   default:
     external:
-       name: int365
+      name: int365
   int365:
     external: true
