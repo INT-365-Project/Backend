@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
-@CrossOrigin("http://20.92.229.38:80")
+@CrossOrigin(value = "http://20.92.229.38",allowedHeaders = "*")
 @Controller
 public class ChatController {
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin("http://20.92.229.38:80")
+@CrossOrigin(value = "http://20.92.229.38",allowedHeaders = "*")
 @RestController
 @RequestMapping("/news")
 public class NewsController {
