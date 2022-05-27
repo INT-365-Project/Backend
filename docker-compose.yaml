@@ -10,7 +10,7 @@ mysqldb:
     ports:
       - '3306:3306'
     volumes:
-      - ./script.sql:/docker-entrypoint-initdb.d/1.sql
+      - ../script.sql:/docker-entrypoint-initdb.d/1.sql
     networks:
       project:
         ipv4_address: 172.99.99.3
