@@ -6,10 +6,6 @@ services:
     restart: on-failure
     ports:
       - '8081:8081'
-    environment:
-      SPRING_DATASOURCE_URL: 'jdbc:mysql://172.99.99.3:3306/int365'
-      SPRING_DATASOURCE_USERNAME: user-db1
-      SPRING_DATASOURCE_PASSWORD: 1234
     networks:
       int365:
         ipv4_address: 172.99.99.2
