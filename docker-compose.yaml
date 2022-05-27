@@ -17,6 +17,7 @@ services:
   backend:
     image: 'ghcr.io/int-365-project/backend:latest'
     container_name: backend
+    restart: on-failure
     ports:
       - '8081:8081'
     depends_on:
