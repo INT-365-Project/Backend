@@ -26,6 +26,7 @@ public interface NewsMapper {
             @Mapping(source = "request.title", target = "title"),
             @Mapping(source = "request.detail", target = "detail"),
             @Mapping(source = "request.thumbnailPath", target = "thumbnailPath"),
+            @Mapping(source = "request.thumbnailFileName", target = "thumbnailFileName"),
             @Mapping(source = "date", target = "createDate"),
             @Mapping(source = "fullName", target = "createBy"),
             @Mapping(source = "date", target = "updateDate"),
