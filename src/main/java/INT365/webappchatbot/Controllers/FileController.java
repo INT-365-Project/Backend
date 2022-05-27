@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(value = "http://20.92.229.38",allowedHeaders = "*")
+@CrossOrigin(value = "http://20.92.229.38", allowedHeaders = "*")
 public class FileController {
 
     @Autowired
