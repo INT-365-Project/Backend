@@ -41,4 +41,3 @@ jobs:
           docker-compose pull
           docker-compose up -d
           docker image prune -af
-          docker-compose restart -t 30 backend
