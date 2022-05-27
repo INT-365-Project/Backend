@@ -1,6 +1,6 @@
 version: "3"
 services:
-mysqldb:
+  mysqldb:
     image: mysql/mysql-server:latest
     container_name: database
     restart: on-failure
