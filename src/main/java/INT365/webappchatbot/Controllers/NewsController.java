@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 // @CrossOrigin(value = "http://20.92.229.38", allowedHeaders = "*")
 @RestController
-@RequestMapping("/news")
+@RequestMapping("/api/news")
 public class NewsController {
 
     @Autowired

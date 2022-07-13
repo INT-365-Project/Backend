@@ -15,6 +15,7 @@ import java.util.Map;
 
 @RestController
 // @CrossOrigin(value = "http://20.92.229.38", allowedHeaders = "*")
+@RequestMapping("/api")
 public class FileController {
 
     @Autowired

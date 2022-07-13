@@ -15,6 +15,7 @@ import java.util.List;
 
 // @CrossOrigin(value = "http://20.92.229.38", allowedHeaders = "*")
 @RestController
+@RequestMapping("/api")
 public class AuthController {
     @Autowired
     private JwtTokenUtils jwtTokenUtil;

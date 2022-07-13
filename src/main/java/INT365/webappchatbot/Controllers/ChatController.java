@@ -15,6 +15,7 @@ import java.util.List;
 
 // @CrossOrigin(value = "http://20.92.229.38", allowedHeaders = "*")
 @Controller
+@RequestMapping("/api")
 public class ChatController {
 
     @Autowired
