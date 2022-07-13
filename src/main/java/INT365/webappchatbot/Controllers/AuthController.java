@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin(value = "http://20.92.229.38", allowedHeaders = "*")
+// @CrossOrigin(value = "http://20.92.229.38", allowedHeaders = "*")
 @RestController
 public class AuthController {
     @Autowired
