@@ -37,6 +37,7 @@ jobs:
           export GITHUB_USER=62130500093
           echo $TOKEN | docker login ghcr.io --password-stdin --username $GITHUB_USER
           cd ./Backend
+          git pull origin deploy
           docker-compose stop && docker-compose rm -f
           docker-compose pull
           docker-compose up -d
