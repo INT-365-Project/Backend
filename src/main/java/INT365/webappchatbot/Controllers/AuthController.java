@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class AuthController {
+    
     @Autowired
     private JwtTokenUtils jwtTokenUtil;
     @Autowired
