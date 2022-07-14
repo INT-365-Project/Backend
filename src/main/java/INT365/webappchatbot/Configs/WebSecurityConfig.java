@@ -50,12 +50,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         // We don't need CSRF for this example
         httpSecurity.cors().disable();
-        httpSecurity.csrf().disable().authorizeRequests().antMatchers("/authenticate").permitAll();
-        httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/reports", "/reports/").permitAll();
-        httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST,"/reports/createReport").permitAll();
-        httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/news", "/news/").permitAll();
-        httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST,"/viewFileByPath").permitAll();
-        httpSecurity.authorizeRequests().antMatchers("/chat" ,"/chat/**").permitAll();
+        httpSecurity.csrf().disable().authorizeRequests().antMatchers("/api/authenticate").permitAll();
+        httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/api/reports", "/api/reports/").permitAll();
+        httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST,"/api/reports/createReport").permitAll();
+        httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/api/news", "/api/news/").permitAll();
+        httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST,"/api/viewFileByPath").permitAll();
+        httpSecurity.authorizeRequests().antMatchers("/api/chat" ,"/api/chat/**").permitAll();
 // dont authenticate this particular request
         //.authorizeRequests().antMatchers("/authenticate").permitAll().
         // all other requests need to be authenticated
