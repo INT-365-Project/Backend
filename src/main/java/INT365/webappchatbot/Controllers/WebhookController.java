@@ -18,7 +18,7 @@ public class WebhookController {
 
     @PostMapping("/test")
     public Object testWebhook(@RequestBody WebhookRequest request) {
-        return ResponseEntity.ok();
+        return "yes";
 //        RestTemplate restTemplate = new RestTemplate();
 //        SendingMessageRequest msgRequest = new SendingMessageRequest();
 //        List<WebhookMessage> messages = new ArrayList<>();
