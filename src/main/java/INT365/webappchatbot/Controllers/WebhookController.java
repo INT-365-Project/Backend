@@ -22,6 +22,7 @@ public class WebhookController {
     private final String channelAccessToken = "otHH5PaiURD4VbIuAdyS1MnGxhe5gTw5aH+emXYIT70a1HG3DLazeCT+Te94f8pOHuRAwKySHYetZ+uQrtffwgEbSugS14Zne6TZfxuYgv8qK+KXHumBNt3L2YsJdT6hZcbBvcVSKKlNxXXgvBA8XgdB04t89/1O/w1cDnyilFU=";
     private final String channelId = "1657101758";
     private final String channelSecret = "08ff6b71e9ae45dae62f27b762d8df65";
+    private final String sendingMessageURI = "https://api.line.me/v2/bot/message/reply";
 
     @PostMapping("/test")
     public Object testWebhook(@RequestBody WebhookRequest request) {
@@ -44,7 +45,7 @@ public class WebhookController {
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
         httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
         HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(msgRequest, httpHeaders);
-        return restTemplate.postForObject("https://api.line.me/v2/bot/message/reply", entity, Object.class);
+        return restTemplate.postForObject(this.sendingMessageURI, entity, Object.class);
     }
 
 }
