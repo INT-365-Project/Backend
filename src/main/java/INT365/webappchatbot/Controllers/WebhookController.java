@@ -1,19 +1,11 @@
 package INT365.webappchatbot.Controllers;
 
-import INT365.webappchatbot.Models.req.SendingMessageRequest;
-import INT365.webappchatbot.Webhook.WebhookEvent;
-import INT365.webappchatbot.Webhook.WebhookMessage;
 import INT365.webappchatbot.Webhook.WebhookRequest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/webhook")
@@ -26,26 +18,27 @@ public class WebhookController {
 
     @PostMapping("/test")
     public Object testWebhook(@RequestBody WebhookRequest request) {
-        RestTemplate restTemplate = new RestTemplate();
-        SendingMessageRequest msgRequest = new SendingMessageRequest();
-        List<WebhookMessage> messages = new ArrayList<>();
-        for (WebhookEvent event : request.getEvents()) {
-            if (event.getMessage() != null) {
-                if (event.getMessage().getType().equals("text")) {
-                    WebhookMessage message = new WebhookMessage();
-                    message.setType("text");
-                    message.setText("Hello world");
-                    messages.add(message);
-                    msgRequest.setReplyToken(event.getReplyToken());
-                }
-            }
-        }
-        msgRequest.setMessages(messages);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
-        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
-        HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(msgRequest, httpHeaders);
-        return restTemplate.postForObject(this.sendingMessageURI, entity, Object.class);
+        return ResponseEntity.ok();
+//        RestTemplate restTemplate = new RestTemplate();
+//        SendingMessageRequest msgRequest = new SendingMessageRequest();
+//        List<WebhookMessage> messages = new ArrayList<>();
+//        for (WebhookEvent event : request.getEvents()) {
+//            if (event.getMessage() != null) {
+//                if (event.getMessage().getType().equals("text")) {
+//                    WebhookMessage message = new WebhookMessage();
+//                    message.setType("text");
+//                    message.setText("Hello world");
+//                    messages.add(message);
+//                    msgRequest.setReplyToken(event.getReplyToken());
+//                }
+//            }
+//        }
+//        msgRequest.setMessages(messages);
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
+//        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
+//        HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(msgRequest, httpHeaders);
+//        return restTemplate.postForObject(this.sendingMessageURI, entity, Object.class);
     }
 
 }
