@@ -18,6 +18,7 @@
         <io.jsonwebtoken>0.9.1</io.jsonwebtoken>
         <com.netflix.feign.version>8.14.3</com.netflix.feign.version>
         <juniper.version>5.8.2</juniper.version>
+        <stripe.version>21.2.0</stripe.version>
     </properties>
     <dependencies>
         <dependency>
@@ -103,7 +104,11 @@
             <version>${juniper.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>${stripe.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

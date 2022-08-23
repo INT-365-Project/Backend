@@ -4,7 +4,6 @@ import INT365.webappchatbot.Constants.ModelConstant;
 import INT365.webappchatbot.Models.ResponseModel;
 import INT365.webappchatbot.Models.UserModel;
 import INT365.webappchatbot.Models.req.NewsRequest;
-import INT365.webappchatbot.Services.FileService;
 import INT365.webappchatbot.Services.JwtUserDetailService;
 import INT365.webappchatbot.Services.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,6 @@ public class NewsController {
     private JwtUserDetailService userDetailService;
     @Autowired
     private NewsService newsService;
-    @Autowired
-    private FileService fileService;
 
     @GetMapping("")
     public ResponseModel<Object> getNews() {
