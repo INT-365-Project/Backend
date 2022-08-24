@@ -4,9 +4,12 @@ import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
 import INT365.webappchatbot.Models.req.SendingMessageRequest;
 import INT365.webappchatbot.Models.resp.UserProfileResponse;
+import INT365.webappchatbot.Repositories.ChatHistoryRepository;
+import INT365.webappchatbot.Repositories.ChatRepository;
 import INT365.webappchatbot.Webhook.WebhookEvent;
 import INT365.webappchatbot.Webhook.WebhookMessage;
 import INT365.webappchatbot.Webhook.WebhookObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,6 +23,10 @@ import java.util.List;
 @Service
 public class WebhookService {
 
+    @Autowired
+    private ChatRepository chatRepository;
+    @Autowired
+    private ChatHistoryRepository chatHistoryRepository;
     private final String channelAccessToken = "otHH5PaiURD4VbIuAdyS1MnGxhe5gTw5aH+emXYIT70a1HG3DLazeCT+Te94f8pOHuRAwKySHYetZ+uQrtffwgEbSugS14Zne6TZfxuYgv8qK+KXHumBNt3L2YsJdT6hZcbBvcVSKKlNxXXgvBA8XgdB04t89/1O/w1cDnyilFU=";
     private final String channelId = "1657101758";
     private final String channelSecret = "08ff6b71e9ae45dae62f27b762d8df65";
@@ -27,6 +34,7 @@ public class WebhookService {
     private final String getProfileURI = "https://api.line.me/v2/bot/profile"; // "/{userId}"
     private final String dialogflowURI = "https://dialogflow.cloud.google.com/v1/integrations/line/webhook/8dfbb52a-8ad0-41fa-b224-ebb744200442";
     private final RestTemplate restTemplate = new RestTemplate();
+
 
     public Object testWebhook(WebhookObject request) {
         // save message to chat history that send from user
@@ -48,18 +56,23 @@ public class WebhookService {
                 if (event.getMessage().getType().equals("text")) {
                     // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
                     // chat detail
-                    Chat chat = new Chat();
-                    chat.setName1("admin");
-                    chat.setName2(userId);
-                    chat.setCreateDate(new Date());
+                    Chat chat = this.chatRepository.findChatBySenderAndReceiverName("admin", userId) == null ? new Chat() : this.chatRepository.findChatBySenderAndReceiverName("admin", userId);
+                    if (chat.getChatId() == null) {
+                        chat.setName1("admin");
+                        chat.setName2(userId);
+                        chat.setCreateDate(new Date());
+                        chat = this.chatRepository.saveAndFlush(chat);
+                    }
                     // chat history detail
                     ChatHistory history = new ChatHistory();
                     UserProfileResponse userObject = this.getUserProfile(userId);
+                    history.setChatId(chat.getChatId());
                     history.setSenderName(way.equals("get") ? userObject.getDisplayName() : "admin");
                     history.setReceiverName(way.equals("get") ? "admin" : userObject.getDisplayName());
                     // only text
                     history.setMessage(event.getMessage().getText());
                     history.setSentDate(event.getTimestamp());
+                    this.chatHistoryRepository.saveAndFlush(history);
                 }
             }
         }
