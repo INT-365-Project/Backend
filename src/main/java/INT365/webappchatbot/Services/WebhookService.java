@@ -61,7 +61,7 @@ public class WebhookService {
 
 //Object to JSON in file
         try {
-            mapper.writeValue(new File("/home/azureuser/request.json"), object);
+            mapper.writeValue(new File("/home/azureuser/request.json"), request);
             mapper.writeValue(new File("/home/azureuser/object.json"), object);
         } catch (IOException e) {
             throw new RuntimeException(e);
