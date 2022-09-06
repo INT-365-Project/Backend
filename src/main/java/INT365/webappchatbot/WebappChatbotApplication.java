@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @SpringBootApplication
 @EnableFeignClients
-@EnableAsync
 public class WebappChatbotApplication {
 
     public static void main(String[] args) {
