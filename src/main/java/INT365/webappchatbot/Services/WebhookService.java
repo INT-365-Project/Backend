@@ -76,8 +76,8 @@ public class WebhookService {
         CompletableFuture<WebhookObject> completableFuture = new CompletableFuture<>();
 
         Executors.newCachedThreadPool().submit(() -> {
-            Thread.sleep(10000);
             completableFuture.complete(this.sendToDialogflow(request));
+            Thread.sleep(10000);
             return null;
         });
         return completableFuture;
