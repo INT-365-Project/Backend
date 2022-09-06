@@ -85,6 +85,7 @@ public class WebhookService {
         return this.restTemplate.postForObject(this.dialogflowURI, request, WebhookObject.class);
     }
 
+    @Async
     public UserProfileResponse getUserProfile(String userId) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
