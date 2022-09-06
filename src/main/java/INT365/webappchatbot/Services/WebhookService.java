@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.*;
 
 @Service
 public class WebhookService {
@@ -49,15 +47,7 @@ public class WebhookService {
         // save message to chat history that send from user
         this.saveMessage(request, "get");
         // use bot flow
-        WebhookObject object;
-//        CompletableFuture<WebhookObject> completableFuture = CompletableFuture.supplyAsync(() -> this.sendToDialogflow(request));
-        Future<WebhookObject> completableFuture = null;
-        try {
-            completableFuture = this.calculateAsync(request);
-            object = completableFuture.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        WebhookObject object = this.sendToDialogflow(request);
         ObjectMapper mapper = new ObjectMapper();
         //Object to JSON in file
         try {
@@ -72,16 +62,7 @@ public class WebhookService {
         return object;
         // use manual flow
     }
-    public Future<WebhookObject> calculateAsync(WebhookObject request) throws InterruptedException {
-        CompletableFuture<WebhookObject> completableFuture = new CompletableFuture<>();
 
-        Executors.newCachedThreadPool().submit(() -> {
-            completableFuture.complete(this.sendToDialogflow(request));
-            Thread.sleep(10000);
-            return null;
-        });
-        return completableFuture;
-    }
     @Transactional
     private void saveMessage(WebhookObject request, String way) {
         for (WebhookEvent event : request.getEvents()) {
@@ -113,7 +94,7 @@ public class WebhookService {
         }
     }
 
-    public WebhookObject sendToDialogflow(WebhookObject request) {
+    public synchronized WebhookObject sendToDialogflow(WebhookObject request) {
         // send message to Dialogflow and send it back to Line
         return this.restTemplate.postForObject(this.dialogflowURI, request, WebhookObject.class);
     }
