@@ -45,7 +45,7 @@ public class WebhookService {
 
     public Object testWebhook(WebhookObject request) {
         // save message to chat history that send from user
-        this.saveMessage(request, "get");
+//        this.saveMessage(request, "get");
         // use bot flow
         Object object = this.sendToDialogflow(request);
         ObjectMapper mapper = new ObjectMapper();
@@ -96,7 +96,7 @@ public class WebhookService {
 
     public Object sendToDialogflow(WebhookObject request) {
         // send message to Dialogflow and send it back to Line
-        return this.restTemplate.postForObject(this.dialogflowURI, request, WebhookObject.class);
+        return this.restTemplate.postForObject(this.dialogflowURI, request, Object.class);
     }
 
     public UserProfileResponse getUserProfile(String userId) {
