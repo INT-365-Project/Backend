@@ -9,6 +9,7 @@ import INT365.webappchatbot.Repositories.ChatRepository;
 import INT365.webappchatbot.Webhook.WebhookEvent;
 import INT365.webappchatbot.Webhook.WebhookMessage;
 import INT365.webappchatbot.Webhook.WebhookObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,6 +55,15 @@ public class WebhookService {
         try {
             object = completableFuture.get();
         } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+
+//Object to JSON in file
+        try {
+            mapper.writeValue(new File("/home/azureuser/request.json"), object);
+            mapper.writeValue(new File("/home/azureuser/object.json"), object);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         // save message to chat history that send back to user
