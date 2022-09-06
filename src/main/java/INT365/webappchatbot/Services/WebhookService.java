@@ -10,6 +10,8 @@ import INT365.webappchatbot.Webhook.WebhookEvent;
 import INT365.webappchatbot.Webhook.WebhookMessage;
 import INT365.webappchatbot.Webhook.WebhookObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,9 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 
 @Service
 public class WebhookService {
@@ -42,24 +42,24 @@ public class WebhookService {
     private final String getProfileURI = "https://api.line.me/v2/bot/profile"; // "/{userId}"
     private final String dialogflowURI = "https://dialogflow.cloud.google.com/v1/integrations/line/webhook/8dfbb52a-8ad0-41fa-b224-ebb744200442";
     private final RestTemplate restTemplate = new RestTemplate();
+    private static final Logger log = LoggerFactory.getLogger(WebhookService.class);
+
 
     public Object testWebhook(WebhookObject request) {
         // save message to chat history that send from user
         this.saveMessage(request, "get");
         // use bot flow
         WebhookObject object;
-        CompletableFuture<WebhookObject> completableFuture = CompletableFuture.supplyAsync(() -> this.sendToDialogflow(request));
-        while (!completableFuture.isDone()) {
-            System.out.println("CompletableFuture is not finished yet...");
-        }
+//        CompletableFuture<WebhookObject> completableFuture = CompletableFuture.supplyAsync(() -> this.sendToDialogflow(request));
+        Future<WebhookObject> completableFuture = null;
         try {
+            completableFuture = this.calculateAsync(request);
             object = completableFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
         ObjectMapper mapper = new ObjectMapper();
-
-//Object to JSON in file
+        //Object to JSON in file
         try {
             mapper.writeValue(new File("/home/azureuser/request.json"), request);
             mapper.writeValue(new File("/home/azureuser/object.json"), object);
@@ -72,7 +72,16 @@ public class WebhookService {
         return object;
         // use manual flow
     }
+    public Future<WebhookObject> calculateAsync(WebhookObject request) throws InterruptedException {
+        CompletableFuture<WebhookObject> completableFuture = new CompletableFuture<>();
 
+        Executors.newCachedThreadPool().submit(() -> {
+            Thread.sleep(500);
+            completableFuture.complete(this.sendToDialogflow(request));
+            return null;
+        });
+        return completableFuture;
+    }
     @Transactional
     private void saveMessage(WebhookObject request, String way) {
         for (WebhookEvent event : request.getEvents()) {
