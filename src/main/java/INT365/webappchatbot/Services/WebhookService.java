@@ -96,6 +96,10 @@ public class WebhookService {
 
     public synchronized WebhookObject sendToDialogflow(WebhookObject request) {
         // send message to Dialogflow and send it back to Line
+        WebhookObject response = this.restTemplate.postForObject(this.dialogflowURI, request, WebhookObject.class);
+        while(true){
+            if(response.getEvents() != null) break;
+        }
         return this.restTemplate.postForObject(this.dialogflowURI, request, WebhookObject.class);
     }
 
