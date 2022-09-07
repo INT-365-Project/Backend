@@ -1,4 +1,4 @@
-package INT365.webappchatbot.Webhook;
+package INT365.webappchatbot.Models.Webhook;
 
 import lombok.Data;
 

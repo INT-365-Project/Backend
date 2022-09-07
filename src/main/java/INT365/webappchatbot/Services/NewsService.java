@@ -28,6 +28,8 @@ public class NewsService {
 
     @Transactional
     public Map<String, Long> createOrUpdateNews(NewsRequest request, UserModelDetail user) {
+        if (request.getNewId() > 0)
+            this.newsRepository.findById(request.getNewId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "there is no id - " + request.getNewId()));
         News news = this.newsRepository.saveAndFlush(NewsMapper.INSTANCE.createNews(request, new Date(), user.getFullName()));
         if (StringUtils.isNotEmpty(request.getThumbnailFile())) {
             if (StringUtils.isNotEmpty(news.getThumbnailPath())) {
