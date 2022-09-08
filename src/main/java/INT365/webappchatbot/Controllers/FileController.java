@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+// @CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
 @RestController
-// @CrossOrigin(value = "http://20.92.229.38", allowedHeaders = "*")
 @RequestMapping("/api")
 public class FileController {
 

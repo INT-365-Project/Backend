@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
-// @CrossOrigin(value = "http://20.92.229.38", allowedHeaders = "*")
+// @CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api")
 public class AuthController {

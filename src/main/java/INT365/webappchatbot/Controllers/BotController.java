@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// @CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/bot")
 public class BotController {
