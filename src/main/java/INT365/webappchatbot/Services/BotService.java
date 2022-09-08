@@ -56,7 +56,7 @@ public class BotService {
                     res.setTopic(topic);
                     res.setResponseType(response.getType());
                     res.setResponse(response.getContent());
-                    res.setSeq(res.getSeq());
+                    res.setSeq(response.getSeq());
                     this.responseRepository.saveAndFlush(res);
                 }
                 for (BotExpression expression : command.getExpressions()) {
