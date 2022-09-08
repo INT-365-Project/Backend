@@ -77,14 +77,14 @@ public class BotService {
     public BotObject getAllExpressions() {
         BotObject object = new BotObject();
         List<BotCommand> commandList = new ArrayList<>();
-        List<String> nonDuplicatedNameList = new ArrayList<>();
-        for (String name : this.botRepository.findAll().stream().map(Bot::getName).collect(Collectors.toList())) {
-            if (nonDuplicatedNameList.isEmpty()) nonDuplicatedNameList.add(name);
+        List<String> nonDuplicatedTopicNameList = new ArrayList<>();
+        for (String name : this.botRepository.findAll().stream().map(Bot::getTopicName).collect(Collectors.toList())) {
+            if (nonDuplicatedTopicNameList.isEmpty()) nonDuplicatedTopicNameList.add(name);
             else {
-                if (!nonDuplicatedNameList.contains(name)) nonDuplicatedNameList.add(name);
+                if (!nonDuplicatedTopicNameList.contains(name)) nonDuplicatedTopicNameList.add(name);
             }
         }
-        for (String name : nonDuplicatedNameList) {
+        for (String name : nonDuplicatedTopicNameList) {
             BotCommand command = new BotCommand();
             List<BotExpression> expressionList = new ArrayList<>();
             List<BotResponse> responseList = new ArrayList<>();
