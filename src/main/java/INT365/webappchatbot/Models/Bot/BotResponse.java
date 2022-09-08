@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class BotResponse {
+    private String name;
     private String type;
     private String content;
     private Integer seq;

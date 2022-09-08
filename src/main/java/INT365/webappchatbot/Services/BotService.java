@@ -40,20 +40,21 @@ public class BotService {
                 if (requestName == null) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name cannot be null");
                 } else if (StringUtils.isNotEmpty(requestName)) {
-                    if (this.botRepository.findBotsByName(requestName).isEmpty() || this.responseRepository.findResponsesByName(requestName).isEmpty())
+                    if (this.botRepository.findBotsByTopicName(requestName).isEmpty() || this.responseRepository.findResponsesByTopicName(requestName).isEmpty())
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name does not match");
                 }
                 String name = StringUtils.isEmpty(requestName) ? this.randomName() : requestName;
                 command.setName(name);
                 String topic = command.getTopic();
                 // delete expression and response by topic
-                this.botRepository.deleteBotsByName(name);
-                this.responseRepository.deleteResponsesByName(name);
+                this.botRepository.deleteBotsByTopicName(name);
+                this.responseRepository.deleteResponsesByTopicName(name);
                 // create new expression and response by topic
                 for (BotResponse response : command.getResponses()) {
                     Response res = new Response();
-                    res.setName(name);
+                    res.setName(this.randomName());
                     res.setTopic(topic);
+                    res.setTopicName(name);
                     res.setResponseType(response.getType());
                     res.setResponse(response.getContent());
                     res.setSeq(response.getSeq());
@@ -62,13 +63,15 @@ public class BotService {
                 for (BotExpression expression : command.getExpressions()) {
                     Bot bot = new Bot();
                     bot.setExpression(expression.getText());
-                    bot.setName(name);
+                    bot.setName(this.randomName());
                     bot.setTopic(topic);
+                    bot.setTopicName(name);
                     this.botRepository.saveAndFlush(bot);
                 }
             }
+            return request;
         }
-        return request;
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "commands cannot be null");
     }
 
     public BotObject getAllExpressions() {
@@ -85,16 +88,18 @@ public class BotService {
             BotCommand command = new BotCommand();
             List<BotExpression> expressionList = new ArrayList<>();
             List<BotResponse> responseList = new ArrayList<>();
-            for (Bot bot : this.botRepository.findBotsByName(name)) {
+            for (Bot bot : this.botRepository.findBotsByTopicName(name)) {
                 command.setName(bot.getName());
                 command.setTopic(bot.getTopic());
                 BotExpression expression = new BotExpression();
+                expression.setName(bot.getName());
                 expression.setText(bot.getExpression());
                 expressionList.add(expression);
             }
             command.setExpressions(expressionList);
-            for (Response response : this.responseRepository.findResponsesByName(name)) {
+            for (Response response : this.responseRepository.findResponsesByTopicName(name)) {
                 BotResponse res = new BotResponse();
+                res.setName(response.getName());
                 res.setType(response.getResponseType());
                 res.setContent(response.getResponse());
                 res.setSeq(response.getSeq());
@@ -138,7 +143,7 @@ public class BotService {
         return responseObjectList;
     }
 
-    public List<Response> getResponseFromText(String text) {
+    private List<Response> getResponseFromText(String text) {
         List<Bot> filteredExpression = this.botRepository.findAll().isEmpty() ? new ArrayList<>() : this.botRepository.findAll().stream().filter((expression) -> expression.getExpression().contains(text)).collect(Collectors.toList());
         if (filteredExpression.size() == 0) {
             List<Response> responseList = new ArrayList<>();

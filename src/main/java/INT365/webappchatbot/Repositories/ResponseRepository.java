@@ -12,11 +12,11 @@ import java.util.List;
 @Repository
 public interface ResponseRepository extends JpaRepository<Response, Long> {
 
-    List<Response> findResponsesByName(String name);
+    List<Response> findResponsesByTopicName(String topicName);
 
     List<Response> findResponsesByTopic(String topic);
 
     @Modifying
-    @Query("delete from Response r where r.name = :name")
-    void deleteResponsesByName(@Param("name") String name);
+    @Query("delete from Response r where r.topicName = :topicName")
+    void deleteResponsesByTopicName(@Param("topicName") String topicName);
 }

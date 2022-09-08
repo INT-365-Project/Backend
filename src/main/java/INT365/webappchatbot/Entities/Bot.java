@@ -22,6 +22,9 @@ public class Bot {
     @Column(name = "TOPIC")
     private String topic;
 
+    @Column(name = "TOPIC_NAME")
+    private String topicName;
+
     @Column(name = "NAME", updatable = false)
     private String name;
 

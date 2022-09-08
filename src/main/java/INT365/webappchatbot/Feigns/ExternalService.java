@@ -17,7 +17,8 @@ import java.util.List;
 @Service
 public class ExternalService {
 
-    private final String lineMessagingApi = "https://api.line.me/v2/bot/message/reply";
+    private final String lineReplyMessagingApi = "https://api.line.me/v2/bot/message/reply";
+    private final String linePushMessagingApi = "https://api.line.me/v2/bot/message/reply";
     private final String channelAccessToken = "otHH5PaiURD4VbIuAdyS1MnGxhe5gTw5aH+emXYIT70a1HG3DLazeCT+Te94f8pOHuRAwKySHYetZ+uQrtffwgEbSugS14Zne6TZfxuYgv8qK+KXHumBNt3L2YsJdT6hZcbBvcVSKKlNxXXgvBA8XgdB04t89/1O/w1cDnyilFU=";
     private final String channelId = "1657101758";
     private final String channelSecret = "08ff6b71e9ae45dae62f27b762d8df65";
@@ -39,7 +40,19 @@ public class ExternalService {
                 httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
                 httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
                 HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(message, httpHeaders);
-                this.restTemplate.postForObject(this.lineMessagingApi, entity, Object.class);
+                this.restTemplate.postForObject(this.lineReplyMessagingApi, entity, Object.class);
+            }
+        }
+    }
+
+    public void pushMessage(List<SendingMessageRequest> messageRequest) {
+        if (messageRequest.size() > 0) {
+            for (SendingMessageRequest message : messageRequest) {
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
+                httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
+                HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(message, httpHeaders);
+                this.restTemplate.postForObject(this.linePushMessagingApi, entity, Object.class);
             }
         }
     }
@@ -69,7 +82,7 @@ public class ExternalService {
             httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
             httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
             HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(msgRequest, httpHeaders);
-            return this.restTemplate.postForObject(this.lineMessagingApi, entity, Object.class);
+            return this.restTemplate.postForObject(this.lineReplyMessagingApi, entity, Object.class);
         }
         return "not ok";
     }

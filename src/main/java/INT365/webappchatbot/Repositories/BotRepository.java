@@ -12,9 +12,9 @@ import java.util.List;
 @Repository
 public interface BotRepository extends JpaRepository<Bot, Long> {
 
-    List<Bot> findBotsByName(String name);
+    List<Bot> findBotsByTopicName(String topicName);
 
     @Modifying
-    @Query("delete from Bot b where b.name = :name")
-    void deleteBotsByName(@Param("name") String name);
+    @Query("delete from Bot b where b.topicName = :topicName")
+    void deleteBotsByTopicName(@Param("topicName") String topicName);
 }

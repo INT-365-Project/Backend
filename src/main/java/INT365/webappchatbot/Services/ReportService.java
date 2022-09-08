@@ -26,7 +26,7 @@ public class ReportService {
     }
 
     public ReportResponse getReportById(Long reportId) {
-        return ReportMapper.INSTANCE.createReportResponse(this.reportRepository.findById(reportId).get());
+        return ReportMapper.INSTANCE.createReportResponse(this.reportRepository.findById(reportId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "there is no id - " + reportId)));
     }
 
     @Transactional
