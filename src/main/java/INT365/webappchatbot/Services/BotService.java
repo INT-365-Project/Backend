@@ -71,6 +71,46 @@ public class BotService {
         return request;
     }
 
+    public BotObject getAllExpressions() {
+        BotObject object = new BotObject();
+        List<BotCommand> commandList = new ArrayList<>();
+        List<String> nonDuplicatedNameList = new ArrayList<>();
+        for (String name : this.botRepository.findAll().stream().map(Bot::getName).collect(Collectors.toList())) {
+            if (nonDuplicatedNameList.isEmpty()) nonDuplicatedNameList.add(name);
+            else {
+                for (String checkName : nonDuplicatedNameList) {
+                    if (!checkName.equals(name)) {
+                        nonDuplicatedNameList.add(name);
+                    }
+                }
+            }
+        }
+        for (String name : nonDuplicatedNameList) {
+            BotCommand command = new BotCommand();
+            List<BotExpression> expressionList = new ArrayList<>();
+            List<BotResponse> responseList = new ArrayList<>();
+            for (Bot bot : this.botRepository.findBotsByName(name)) {
+                command.setName(bot.getName());
+                command.setTopic(bot.getTopic());
+                BotExpression expression = new BotExpression();
+                expression.setText(bot.getExpression());
+                expressionList.add(expression);
+            }
+            command.setExpressions(expressionList);
+            for (Response response : this.responseRepository.findResponsesByName(name)) {
+                BotResponse res = new BotResponse();
+                res.setType(response.getResponseType());
+                res.setContent(response.getResponse());
+                res.setSeq(response.getSeq());
+                responseList.add(res);
+            }
+            command.setResponses(responseList);
+            commandList.add(command);
+        }
+        object.setCommands(commandList);
+        return object;
+    }
+
     public List<SendingMessageRequest> responseToWebhook(WebhookObject object) {
         List<SendingMessageRequest> responseObjectList = new ArrayList<>();
         for (WebhookEvent event : object.getEvents()) {

@@ -5,15 +5,12 @@ import INT365.webappchatbot.Models.ResponseModel;
 import INT365.webappchatbot.Models.req.FileRequest;
 import INT365.webappchatbot.Services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-// @CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
+ @CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api")
 public class FileController {
