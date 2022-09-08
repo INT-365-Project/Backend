@@ -161,9 +161,9 @@ public class BotService {
         int max = this.alphabet.length() - 1;
         int min = 0;
         int range = max - min + 1;
-        int randomNumber = (int) (Math.random() * range) + min;
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 15; i++) {
+            int randomNumber = (int) (Math.random() * range) + min;
             if (i == 4 || i == 9) {
                 builder.append("-");
                 continue;
