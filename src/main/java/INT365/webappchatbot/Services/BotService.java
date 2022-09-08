@@ -78,11 +78,7 @@ public class BotService {
         for (String name : this.botRepository.findAll().stream().map(Bot::getName).collect(Collectors.toList())) {
             if (nonDuplicatedNameList.isEmpty()) nonDuplicatedNameList.add(name);
             else {
-                for (String checkName : nonDuplicatedNameList) {
-                    if (!checkName.equals(name)) {
-                        nonDuplicatedNameList.add(name);
-                    }
-                }
+                if (!nonDuplicatedNameList.contains(name)) nonDuplicatedNameList.add(name);
             }
         }
         for (String name : nonDuplicatedNameList) {
