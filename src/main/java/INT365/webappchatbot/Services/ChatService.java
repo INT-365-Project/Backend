@@ -72,13 +72,13 @@ public class ChatService {
             UserProfileResponse userProfile = this.externalService.getUserProfile(chat.getName2());
             String displayName = userProfile.getDisplayName();
             chatObject.setChatId(chat.getChatId());
-            chatObject.setUsername(displayName);
+            chatObject.setDisplayName(displayName);
             chatObject.setImageUrl(userProfile.getPictureUrl());
             List<ChatHistoryObject> chatHistoryList = new ArrayList<>();
             for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
                 ChatHistoryObject chatHistoryObject = new ChatHistoryObject();
                 chatHistoryObject.setMessage(chatHistory.getMessage());
-                chatHistoryObject.setSenderName(displayName);
+                chatHistoryObject.setSenderName(chatHistoryObject.getSenderName().equals("admin") ? "admin" : displayName);
                 chatHistoryObject.setSentDate(chatHistory.getSentDate());
                 chatHistoryList.add(chatHistoryObject);
             }
