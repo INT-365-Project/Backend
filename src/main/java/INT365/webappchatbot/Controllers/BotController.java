@@ -7,7 +7,7 @@ import INT365.webappchatbot.Services.BotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
- @CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/bot")
 public class BotController {
@@ -30,6 +30,15 @@ public class BotController {
                 .responseCode(ModelConstant.OK.getCode())
                 .responseMessage(ModelConstant.OK.getMessage())
                 .responseData(this.botService.getAllExpressions())
+                .build();
+    }
+
+    @GetMapping("/getAllTopic")
+    public ResponseModel<Object> getAllTopic() {
+        return ResponseModel.builder()
+                .responseCode(ModelConstant.OK.getCode())
+                .responseMessage(ModelConstant.OK.getMessage())
+                .responseData(this.botService.getAllTopics())
                 .build();
     }
 }

@@ -11,6 +11,7 @@ import INT365.webappchatbot.Models.Webhook.WebhookEvent;
 import INT365.webappchatbot.Models.Webhook.WebhookMessage;
 import INT365.webappchatbot.Models.Webhook.WebhookObject;
 import INT365.webappchatbot.Models.req.SendingMessageRequest;
+import INT365.webappchatbot.Models.resp.TopicResponse;
 import INT365.webappchatbot.Repositories.BotRepository;
 import INT365.webappchatbot.Repositories.ResponseRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -77,13 +78,7 @@ public class BotService {
     public BotObject getAllExpressions() {
         BotObject object = new BotObject();
         List<BotCommand> commandList = new ArrayList<>();
-        List<String> nonDuplicatedTopicNameList = new ArrayList<>();
-        for (String name : this.botRepository.findAll().stream().map(Bot::getTopicName).collect(Collectors.toList())) {
-            if (nonDuplicatedTopicNameList.isEmpty()) nonDuplicatedTopicNameList.add(name);
-            else {
-                if (!nonDuplicatedTopicNameList.contains(name)) nonDuplicatedTopicNameList.add(name);
-            }
-        }
+        List<String> nonDuplicatedTopicNameList = this.getNonDuplicatedTopicNameList();
         for (String name : nonDuplicatedTopicNameList) {
             BotCommand command = new BotCommand();
             List<BotExpression> expressionList = new ArrayList<>();
@@ -156,6 +151,32 @@ public class BotService {
 //            return this.responseRepository.findResponsesByTopic("ไม่มีหัวข้อ");
         }
         return this.responseRepository.findResponsesByTopic(filteredExpression.get(0).getTopic());
+    }
+
+    public List<TopicResponse> getAllTopics() {
+        List<TopicResponse> topicResponseList = new ArrayList<>();
+        List<String> nonDuplicatedTopicNameList = this.getNonDuplicatedTopicNameList();
+        for (Bot bot : this.botRepository.findAll()) {
+            if (!nonDuplicatedTopicNameList.isEmpty() && nonDuplicatedTopicNameList.contains(bot.getTopicName())) {
+                continue;
+            }
+            TopicResponse topicResponse = new TopicResponse();
+            topicResponse.setTopic(bot.getTopic());
+            topicResponse.setTopicName(bot.getTopicName());
+            topicResponseList.add(topicResponse);
+        }
+        return topicResponseList;
+    }
+
+    private List<String> getNonDuplicatedTopicNameList() {
+        List<String> nonDuplicatedTopicNameList = new ArrayList<>();
+        for (String name : this.botRepository.findAll().stream().map(Bot::getTopicName).collect(Collectors.toList())) {
+            if (nonDuplicatedTopicNameList.isEmpty()) nonDuplicatedTopicNameList.add(name);
+            else {
+                if (!nonDuplicatedTopicNameList.contains(name)) nonDuplicatedTopicNameList.add(name);
+            }
+        }
+        return nonDuplicatedTopicNameList;
     }
 
     private String randomName() {
