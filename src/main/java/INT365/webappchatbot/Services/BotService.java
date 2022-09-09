@@ -78,7 +78,13 @@ public class BotService {
     public BotObject getAllExpressions() {
         BotObject object = new BotObject();
         List<BotCommand> commandList = new ArrayList<>();
-        List<String> nonDuplicatedTopicNameList = this.getNonDuplicatedTopicNameList();
+        List<String> nonDuplicatedTopicNameList = new ArrayList<>();
+        for (String name : this.botRepository.findAll().stream().map(Bot::getTopicName).collect(Collectors.toList())) {
+            if (nonDuplicatedTopicNameList.isEmpty()) nonDuplicatedTopicNameList.add(name);
+            else {
+                if (!nonDuplicatedTopicNameList.contains(name)) nonDuplicatedTopicNameList.add(name);
+            }
+        }
         for (String name : nonDuplicatedTopicNameList) {
             BotCommand command = new BotCommand();
             List<BotExpression> expressionList = new ArrayList<>();
@@ -155,7 +161,7 @@ public class BotService {
 
     public List<TopicResponse> getAllTopics() {
         List<TopicResponse> topicResponseList = new ArrayList<>();
-        List<String> nonDuplicatedTopicNameList = this.getNonDuplicatedTopicNameList();
+        List<String> nonDuplicatedTopicNameList = new ArrayList<>();
         for (Bot bot : this.botRepository.findAll()) {
             if (!nonDuplicatedTopicNameList.isEmpty() && nonDuplicatedTopicNameList.contains(bot.getTopicName())) {
                 continue;
@@ -163,20 +169,10 @@ public class BotService {
             TopicResponse topicResponse = new TopicResponse();
             topicResponse.setTopic(bot.getTopic());
             topicResponse.setTopicName(bot.getTopicName());
+            nonDuplicatedTopicNameList.add(bot.getTopicName());
             topicResponseList.add(topicResponse);
         }
         return topicResponseList;
-    }
-
-    private List<String> getNonDuplicatedTopicNameList() {
-        List<String> nonDuplicatedTopicNameList = new ArrayList<>();
-        for (String name : this.botRepository.findAll().stream().map(Bot::getTopicName).collect(Collectors.toList())) {
-            if (nonDuplicatedTopicNameList.isEmpty()) nonDuplicatedTopicNameList.add(name);
-            else {
-                if (!nonDuplicatedTopicNameList.contains(name)) nonDuplicatedTopicNameList.add(name);
-            }
-        }
-        return nonDuplicatedTopicNameList;
     }
 
     private String randomName() {

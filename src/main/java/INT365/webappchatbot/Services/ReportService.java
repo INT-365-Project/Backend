@@ -31,7 +31,9 @@ public class ReportService {
 
     @Transactional
     public Map<String, Long> createReport(ReportRequest request) {
-        if (request.getReportId() > 0)
+        if (request.getReportId() == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "id cannot be null");
+        else if (request.getReportId() > 0)
             this.reportRepository.findById(request.getReportId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "there is no id - " + request.getReportId()));
         Long reportId = this.reportRepository.saveAndFlush(ReportMapper.INSTANCE.createReport(request, new Date())).getReportId();
         Map<String, Long> map = new HashMap<>();
