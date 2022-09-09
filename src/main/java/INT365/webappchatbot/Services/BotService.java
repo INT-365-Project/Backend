@@ -84,7 +84,7 @@ public class BotService {
             List<BotExpression> expressionList = new ArrayList<>();
             List<BotResponse> responseList = new ArrayList<>();
             for (Bot bot : this.botRepository.findBotsByTopicName(name)) {
-                command.setName(bot.getName());
+                command.setName(bot.getTopicName());
                 command.setTopic(bot.getTopic());
                 BotExpression expression = new BotExpression();
                 expression.setName(bot.getName());
