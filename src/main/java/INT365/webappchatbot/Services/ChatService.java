@@ -69,11 +69,13 @@ public class ChatService {
         List<ChatObject> responseList = new ArrayList<>();
         for (Chat chat : this.chatRepository.findAll()) {
             ChatObject chatObject = new ChatObject();
-            UserProfileResponse userProfile = this.externalService.getUserProfile(chat.getName2());
-            String displayName = userProfile.getDisplayName();
+//            UserProfileResponse userProfile = this.externalService.getUserProfile(chat.getName2());
+//            String displayName = userProfile.getDisplayName();
+            String displayName = chat.getName2();
             chatObject.setChatId(chat.getChatId());
             chatObject.setDisplayName(displayName);
-            chatObject.setImageUrl(userProfile.getPictureUrl());
+//            chatObject.setImageUrl(userProfile.getPictureUrl());
+            chatObject.setImageUrl("url");
             List<ChatHistoryObject> chatHistoryList = new ArrayList<>();
             for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
                 ChatHistoryObject chatHistoryObject = new ChatHistoryObject();
