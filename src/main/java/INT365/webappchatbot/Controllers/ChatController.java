@@ -45,6 +45,7 @@ public class ChatController {
     }
 
     @MessageMapping("/getHistory")
+    @SendTo("/chatroom/public")
     public List<ChatObject> getChatHistory(@Payload Message message) {
         return this.chatService.getChatHistory();
     }
