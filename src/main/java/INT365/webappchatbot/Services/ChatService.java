@@ -65,10 +65,10 @@ public class ChatService {
         List<Message> messageList = new ArrayList<>();
         for (ChatHistoryResponse chatHistory : historyList) {
             Message returnMessage = new Message();
-            message.setMessage(chatHistory.getMessage());
-            message.setReceiverName(chatHistory.getReceiverName());
-            message.setSenderName(chatHistory.getSenderName());
-            message.setDate(chatHistory.getSentDate());
+            returnMessage.setMessage(chatHistory.getMessage());
+            returnMessage.setReceiverName(chatHistory.getReceiverName());
+            returnMessage.setSenderName(chatHistory.getSenderName());
+            returnMessage.setDate(chatHistory.getSentDate());
             messageList.add(returnMessage);
         }
         return messageList;
