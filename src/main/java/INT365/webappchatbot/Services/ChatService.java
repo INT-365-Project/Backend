@@ -7,7 +7,6 @@ import INT365.webappchatbot.Models.Message;
 import INT365.webappchatbot.Models.resp.ChatHistoryObject;
 import INT365.webappchatbot.Models.resp.ChatHistoryResponse;
 import INT365.webappchatbot.Models.resp.ChatObject;
-import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -80,7 +79,7 @@ public class ChatService {
             for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
                 ChatHistoryObject chatHistoryObject = new ChatHistoryObject();
                 chatHistoryObject.setMessage(chatHistory.getMessage());
-                chatHistoryObject.setSenderName(chatHistoryObject.getSenderName().equals("admin") ? "admin" : displayName);
+                chatHistoryObject.setSenderName(chatHistory.getSenderName().equals("admin") ? "admin" : displayName);
                 chatHistoryObject.setSentDate(chatHistory.getSentDate());
                 chatHistoryList.add(chatHistoryObject);
             }
