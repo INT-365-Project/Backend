@@ -2,6 +2,7 @@ package INT365.webappchatbot.Controllers;
 
 import INT365.webappchatbot.Constants.Status;
 import INT365.webappchatbot.Models.Message;
+import INT365.webappchatbot.Models.resp.ChatObject;
 import INT365.webappchatbot.Services.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
- @CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
 @Controller
 @RequestMapping("/api")
 public class ChatController {
@@ -44,7 +45,7 @@ public class ChatController {
     }
 
     @MessageMapping("/getHistory")
-    public List<Message> getChatHistory(@Payload Message message) {
-        return this.chatService.getChatHistory(message);
+    public List<ChatObject> getChatHistory(@Payload Message message) {
+        return this.chatService.getChatHistory();
     }
 }

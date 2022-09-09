@@ -2,8 +2,12 @@ package INT365.webappchatbot.Services;
 
 import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
+import INT365.webappchatbot.Feigns.ExternalService;
 import INT365.webappchatbot.Models.Message;
+import INT365.webappchatbot.Models.resp.ChatHistoryObject;
 import INT365.webappchatbot.Models.resp.ChatHistoryResponse;
+import INT365.webappchatbot.Models.resp.ChatObject;
+import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +26,8 @@ public class ChatService {
 
     @Autowired
     private ChatHistoryRepository chatHistoryRepository;
+    @Autowired
+    private ExternalService externalService;
 
     @Transactional
     public void saveChat(Message message) {
@@ -59,18 +65,26 @@ public class ChatService {
         }
     }
 
-    public List<Message> getChatHistory(Message message) {
-        Chat chat = this.chatRepository.findChatBySenderAndReceiverName(message.getSenderName(), message.getReceiverName());
-        List<ChatHistoryResponse> historyList = this.chatHistoryRepository.findChatHistoriesByChatId(chat == null ? null : chat.getChatId());
-        List<Message> messageList = new ArrayList<>();
-        for (ChatHistoryResponse chatHistory : historyList) {
-            Message returnMessage = new Message();
-            returnMessage.setMessage(chatHistory.getMessage());
-            returnMessage.setReceiverName(chatHistory.getReceiverName());
-            returnMessage.setSenderName(chatHistory.getSenderName());
-            returnMessage.setDate(chatHistory.getSentDate());
-            messageList.add(returnMessage);
+    public List<ChatObject> getChatHistory() {
+        List<ChatObject> responseList = new ArrayList<>();
+        for (Chat chat : this.chatRepository.findAll()) {
+            ChatObject chatObject = new ChatObject();
+            UserProfileResponse userProfile = this.externalService.getUserProfile(chat.getName2());
+            String displayName = userProfile.getDisplayName();
+            chatObject.setChatId(chat.getChatId());
+            chatObject.setUsername(displayName);
+            chatObject.setImageUrl(userProfile.getPictureUrl());
+            List<ChatHistoryObject> chatHistoryList = new ArrayList<>();
+            for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
+                ChatHistoryObject chatHistoryObject = new ChatHistoryObject();
+                chatHistoryObject.setMessage(chatHistory.getMessage());
+                chatHistoryObject.setSenderName(displayName);
+                chatHistoryObject.setSentDate(chatHistory.getSentDate());
+                chatHistoryList.add(chatHistoryObject);
+            }
+            chatObject.setChatHistory(chatHistoryList);
+            responseList.add(chatObject);
         }
-        return messageList;
+        return responseList;
     }
 }
