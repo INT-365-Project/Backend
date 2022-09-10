@@ -29,7 +29,7 @@ public class ChatService {
     private ExternalService externalService;
 
     @Transactional
-    public void saveChat(Message message) {
+    public Chat saveChat(Message message) {
         // case private chat >> receiverName != null
         if (StringUtils.isNotEmpty(message.getReceiverName())) {
             // find old chat id
@@ -51,6 +51,7 @@ public class ChatService {
             chatHistory.setSentDate(message.getDate());
             chatHistory.setMessage(message.getMessage());
             this.chatHistoryRepository.saveAndFlush(chatHistory);
+            return chat;
         }
         // case public chat >> receiverName == null
         else {
@@ -60,7 +61,8 @@ public class ChatService {
             chatHistory.setSenderName(message.getSenderName());
             chatHistory.setSentDate(message.getDate());
             chatHistory.setMessage(message.getMessage());
-            this.chatHistoryRepository.saveAndFlush(chatHistory);
+            this.chatHistoryRepository.saveAndFlush(chatHistory)
+            return null;
         }
     }
 

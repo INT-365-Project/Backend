@@ -7,6 +7,7 @@ import java.util.Date;
 
 @Data
 public class Message {
+    private Long chatId;
     private String senderName;
     private String receiverName;
     private String message;
