@@ -45,7 +45,7 @@ public class WebhookService {
         // return webhook object to line api
 //        this.externalService.replyMessage(response);
 
-        return ResponseEntity.ok();
+        return null;
         // use manual flow
     }
 
