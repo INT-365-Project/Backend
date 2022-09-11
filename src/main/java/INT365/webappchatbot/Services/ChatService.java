@@ -7,6 +7,7 @@ import INT365.webappchatbot.Models.Message;
 import INT365.webappchatbot.Models.resp.ChatHistoryObject;
 import INT365.webappchatbot.Models.resp.ChatHistoryResponse;
 import INT365.webappchatbot.Models.resp.ChatObject;
+import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -70,13 +71,13 @@ public class ChatService {
         List<ChatObject> responseList = new ArrayList<>();
         for (Chat chat : this.chatRepository.findAll()) {
             ChatObject chatObject = new ChatObject();
-//            UserProfileResponse userProfile = this.externalService.getUserProfile(chat.getName2());
-//            String displayName = userProfile.getDisplayName();
-            String displayName = chat.getName2();
+            UserProfileResponse userProfile = this.externalService.getUserProfile(chat.getName2());
+            String displayName = userProfile.getDisplayName();
+//            String displayName = chat.getName2();
             chatObject.setChatId(chat.getChatId());
             chatObject.setUserId(chat.getName2());
             chatObject.setDisplayName(displayName);
-//            chatObject.setImageUrl(userProfile.getPictureUrl());
+            chatObject.setImageUrl(userProfile.getPictureUrl());
             chatObject.setImageUrl("url");
             List<ChatHistoryObject> chatHistoryList = new ArrayList<>();
             for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
@@ -92,12 +93,13 @@ public class ChatService {
         return responseList;
     }
 
-    public ChatObject getOneChatHistory(Long chatId, String displayName) {
+    public ChatObject getOneChatHistory(Long chatId, String displayName, String imageUrl) {
         ChatObject response = new ChatObject();
         Chat chat = this.chatRepository.findChatByChatId(chatId);
         response.setDisplayName(displayName);
         response.setUserId(chat.getName2());
         response.setChatId(chat.getChatId());
+        response.setImageUrl(imageUrl);
         List<ChatHistoryObject> chatHistoryList = new ArrayList<>();
         for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
             ChatHistoryObject chatHistoryObject = new ChatHistoryObject();

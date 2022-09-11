@@ -10,6 +10,7 @@ import INT365.webappchatbot.Models.Webhook.WebhookMessage;
 import INT365.webappchatbot.Models.Webhook.WebhookObject;
 import INT365.webappchatbot.Models.req.SendingMessageRequest;
 import INT365.webappchatbot.Models.resp.ChatObject;
+import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class WebhookService {
         // save message to chat history that send back to user
         this.saveMessageFromBot(response);
         // return webhook object to line api
-//        this.externalService.replyMessage(response);
+        this.externalService.replyMessage(response);
 
         return null;
         // use manual flow
@@ -69,8 +70,8 @@ public class WebhookService {
                     }
                     // chat history detail
                     ChatHistory history = new ChatHistory();
-//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
-                    String displayName = chat.getName2();
+                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
+                    String displayName = userObject.getDisplayName();
                     history.setChatId(chat.getChatId());
 //                    history.setSenderName(userObject.getDisplayName());
                     history.setSenderName(userId);
@@ -80,7 +81,7 @@ public class WebhookService {
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
                     if (isChatNull) {
-                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName));
+                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl()));
                     } else {
                         this.sendMessageToWebApp(chat, history);
                     }
