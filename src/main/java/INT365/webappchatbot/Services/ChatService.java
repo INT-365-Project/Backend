@@ -57,7 +57,9 @@ public class ChatService {
             // set message send to line
             List<SendingMessageRequest> requestList = new ArrayList<>();
             SendingMessageRequest request = new SendingMessageRequest();
-            request.setTo(chat.getName2());
+            List<String> to = new ArrayList<>();
+            to.add(chat.getName2());
+            request.setTo(to);
             List<WebhookMessage> webhookMessageList = new ArrayList<>();
             WebhookMessage webhookMessage = new WebhookMessage();
             webhookMessage.setText(message.getMessage());
