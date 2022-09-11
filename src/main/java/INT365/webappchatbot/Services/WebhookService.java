@@ -121,7 +121,8 @@ public class WebhookService {
         message.setChatId(chat.getChatId());
         message.setSenderName(chatHistory.getSenderName());
         message.setReceiverName(chatHistory.getReceiverName());
-        message.setMessage(Status.MESSAGE.name());
+        message.setMessage(chatHistory.getMessage());
+        message.setStatus(Status.MESSAGE);
         message.setDate(chatHistory.getSentDate());
         simpMessagingTemplate.convertAndSendToUser(chat.getName2(), "/private", message);
     }
