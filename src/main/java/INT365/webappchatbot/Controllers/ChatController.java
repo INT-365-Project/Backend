@@ -1,8 +1,6 @@
 package INT365.webappchatbot.Controllers;
 
 import INT365.webappchatbot.Constants.Status;
-import INT365.webappchatbot.Entities.Chat;
-import INT365.webappchatbot.Feigns.ExternalService;
 import INT365.webappchatbot.Models.Message;
 import INT365.webappchatbot.Models.resp.ChatObject;
 import INT365.webappchatbot.Services.ChatService;
@@ -12,7 +10,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -41,8 +38,7 @@ public class ChatController {
     public Message receivePrivateMessage(@Payload Message message) {
         simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", message); // path > /user/{receiverName}/private
         if (message.getStatus().equals(Status.MESSAGE)) {
-            Chat chat = this.chatService.saveChat(message);
-            message.setChatId(chat.getChatId());
+            return this.chatService.saveChat(message);
         }
         return message;
     }

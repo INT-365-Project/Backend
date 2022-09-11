@@ -13,4 +13,5 @@ public class Message {
     private String message;
     private Date date;
     private Status status;
+    private String displayName;
 }

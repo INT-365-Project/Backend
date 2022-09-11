@@ -4,6 +4,8 @@ import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
 import INT365.webappchatbot.Feigns.ExternalService;
 import INT365.webappchatbot.Models.Message;
+import INT365.webappchatbot.Models.Webhook.WebhookMessage;
+import INT365.webappchatbot.Models.req.SendingMessageRequest;
 import INT365.webappchatbot.Models.resp.ChatHistoryObject;
 import INT365.webappchatbot.Models.resp.ChatHistoryResponse;
 import INT365.webappchatbot.Models.resp.ChatObject;
@@ -30,7 +32,7 @@ public class ChatService {
     private ExternalService externalService;
 
     @Transactional
-    public Chat saveChat(Message message) {
+    public Message saveChat(Message message) {
         // case private chat >> receiverName != null
         if (StringUtils.isNotEmpty(message.getReceiverName())) {
             // find old chat id
@@ -52,7 +54,21 @@ public class ChatService {
             chatHistory.setSentDate(message.getDate());
             chatHistory.setMessage(message.getMessage());
             this.chatHistoryRepository.saveAndFlush(chatHistory);
-            return chat;
+            // set message send to line
+            List<SendingMessageRequest> requestList = new ArrayList<>();
+            SendingMessageRequest request = new SendingMessageRequest();
+            request.setTo(chat.getName2());
+            List<WebhookMessage> webhookMessageList = new ArrayList<>();
+            WebhookMessage webhookMessage = new WebhookMessage();
+            webhookMessage.setText(message.getMessage());
+            webhookMessage.setType("text");
+            webhookMessageList.add(webhookMessage);
+            request.setMessages(webhookMessageList);
+            requestList.add(request);
+            this.externalService.pushMessage(requestList);
+            message.setChatId(chat.getChatId());
+            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : this.externalService.getUserProfile(chat.getName2()).getDisplayName());
+            return message;
         }
         // case public chat >> receiverName == null
         else {
@@ -78,7 +94,7 @@ public class ChatService {
             chatObject.setUserId(chat.getName2());
             chatObject.setDisplayName(displayName);
             chatObject.setImageUrl(userProfile.getPictureUrl());
-            chatObject.setImageUrl("url");
+//            chatObject.setImageUrl("url");
             List<ChatHistoryObject> chatHistoryList = new ArrayList<>();
             for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
                 ChatHistoryObject chatHistoryObject = new ChatHistoryObject();

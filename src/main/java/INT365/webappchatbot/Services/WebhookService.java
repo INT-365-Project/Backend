@@ -46,7 +46,6 @@ public class WebhookService {
         this.saveMessageFromBot(response);
         // return webhook object to line api
         this.externalService.replyMessage(response);
-
         return null;
         // use manual flow
     }
@@ -83,7 +82,7 @@ public class WebhookService {
                     if (isChatNull) {
                         this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl()));
                     } else {
-                        this.sendMessageToWebApp(chat, history);
+                        this.sendMessageToWebApp(chat, history, displayName);
                     }
                 }
             }
@@ -113,7 +112,7 @@ public class WebhookService {
                     }
                     // chat history detail
                     ChatHistory history = new ChatHistory();
-//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
+                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
                     history.setChatId(chat.getChatId());
 //                    history.setReceiverName(userObject.getDisplayName());
                     history.setReceiverName(userId);
@@ -122,13 +121,13 @@ public class WebhookService {
                     history.setMessage(message.getText());
                     history.setSentDate(new Date());
                     this.chatHistoryRepository.saveAndFlush(history);
-                    this.sendMessageToWebApp(chat, history);
+                    this.sendMessageToWebApp(chat, history, userObject.getDisplayName());
                 }
             }
         }
     }
 
-    private void sendMessageToWebApp(Chat chat, ChatHistory chatHistory) {
+    private void sendMessageToWebApp(Chat chat, ChatHistory chatHistory, String displayName) {
         Message message = new Message();
         message.setChatId(chat.getChatId());
         message.setSenderName(chatHistory.getSenderName());
@@ -136,6 +135,7 @@ public class WebhookService {
         message.setMessage(chatHistory.getMessage());
         message.setStatus(Status.MESSAGE);
         message.setDate(chatHistory.getSentDate());
+        message.setDisplayName(displayName);
         simpMessagingTemplate.convertAndSendToUser(chat.getName2(), "/private", message);
     }
 }
