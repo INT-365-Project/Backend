@@ -1,8 +1,10 @@
 package INT365.webappchatbot.Services;
 
+import INT365.webappchatbot.Constants.Status;
 import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
 import INT365.webappchatbot.Feigns.ExternalService;
+import INT365.webappchatbot.Models.Message;
 import INT365.webappchatbot.Models.Webhook.WebhookEvent;
 import INT365.webappchatbot.Models.Webhook.WebhookMessage;
 import INT365.webappchatbot.Models.Webhook.WebhookObject;
@@ -12,6 +14,7 @@ import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -29,6 +32,8 @@ public class WebhookService {
     private ExternalService externalService;
     @Autowired
     private BotService botService;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     public Object webhookMessageAPI(WebhookObject request) {
         // save message to chat history that send from user
@@ -39,6 +44,7 @@ public class WebhookService {
         this.saveMessageFromBot(response);
         // return webhook object to line api
         this.externalService.replyMessage(response);
+
         return ResponseEntity.ok();
         // use manual flow
     }
@@ -69,6 +75,7 @@ public class WebhookService {
                     history.setMessage(event.getMessage().getText());
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
+                    this.sendMessageToWebApp(chat, history);
                 }
             }
         }
@@ -101,8 +108,19 @@ public class WebhookService {
                     history.setMessage(message.getText());
                     history.setSentDate(new Date());
                     this.chatHistoryRepository.saveAndFlush(history);
+                    this.sendMessageToWebApp(chat, history);
                 }
             }
         }
+    }
+
+    private void sendMessageToWebApp(Chat chat, ChatHistory chatHistory) {
+        Message message = new Message();
+        message.setChatId(chat.getChatId());
+        message.setSenderName(chatHistory.getSenderName());
+        message.setReceiverName(chatHistory.getReceiverName());
+        message.setMessage(Status.MESSAGE.name());
+        message.setDate(chatHistory.getSentDate());
+        simpMessagingTemplate.convertAndSendToUser(chat.getName2(), "/private", message);
     }
 }

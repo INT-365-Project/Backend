@@ -2,6 +2,7 @@ package INT365.webappchatbot.Controllers;
 
 import INT365.webappchatbot.Constants.Status;
 import INT365.webappchatbot.Entities.Chat;
+import INT365.webappchatbot.Feigns.ExternalService;
 import INT365.webappchatbot.Models.Message;
 import INT365.webappchatbot.Models.resp.ChatObject;
 import INT365.webappchatbot.Services.ChatService;

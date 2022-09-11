@@ -61,7 +61,7 @@ public class ChatService {
             chatHistory.setSenderName(message.getSenderName());
             chatHistory.setSentDate(message.getDate());
             chatHistory.setMessage(message.getMessage());
-            this.chatHistoryRepository.saveAndFlush(chatHistory)
+            this.chatHistoryRepository.saveAndFlush(chatHistory);
             return null;
         }
     }
@@ -74,6 +74,7 @@ public class ChatService {
 //            String displayName = userProfile.getDisplayName();
             String displayName = chat.getName2();
             chatObject.setChatId(chat.getChatId());
+//            chatObject.setUserId(chat.getName2());
             chatObject.setDisplayName(displayName);
 //            chatObject.setImageUrl(userProfile.getPictureUrl());
             chatObject.setImageUrl("url");
