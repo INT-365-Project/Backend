@@ -91,4 +91,22 @@ public class ChatService {
         }
         return responseList;
     }
+
+    public ChatObject getOneChatHistory(Long chatId) {
+        ChatObject response = new ChatObject();
+        Chat chat = this.chatRepository.findChatByChatId(chatId);
+        String displayName = chat.getName2();
+        response.setDisplayName(chat.getName2());
+        response.setChatId(chat.getChatId());
+        List<ChatHistoryObject> chatHistoryList = new ArrayList<>();
+        for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
+            ChatHistoryObject chatHistoryObject = new ChatHistoryObject();
+            chatHistoryObject.setMessage(chatHistory.getMessage());
+            chatHistoryObject.setSenderName(chatHistory.getSenderName().equals("admin") ? "admin" : displayName);
+            chatHistoryObject.setSentDate(chatHistory.getSentDate());
+            chatHistoryList.add(chatHistoryObject);
+        }
+        response.setChatHistory(chatHistoryList);
+        return response;
+    }
 }

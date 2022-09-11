@@ -78,14 +78,14 @@ public class WebhookService {
                     history.setMessage(event.getMessage().getText());
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
-                    if (isChatNull) this.sendNewHistoryChatToWebApp(this.chatService.getChatHistory());
+                    if (isChatNull) this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId()));
                     else this.sendMessageToWebApp(chat, history);
                 }
             }
         }
     }
 
-    private void sendNewHistoryChatToWebApp(List<ChatObject> chatHistory) {
+    private void sendNewHistoryChatToWebApp(ChatObject chatHistory) {
         this.simpMessagingTemplate.convertAndSend("/updateNewChat", chatHistory);
     }
 
