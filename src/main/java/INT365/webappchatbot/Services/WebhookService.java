@@ -97,7 +97,7 @@ public class WebhookService {
     private void saveMessageFromBot(List<SendingMessageRequest> responses) {
         for (SendingMessageRequest messageRequest : responses) {
             if (messageRequest.getMessages().isEmpty()) break;
-            String userId = messageRequest.getTo();
+            String userId = messageRequest.getTo().get(0);
             for (WebhookMessage message : messageRequest.getMessages()) {
                 // focus on only user's text message
                 if (message.getType().equals("text")) {
