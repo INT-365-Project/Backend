@@ -56,14 +56,12 @@ public class ChatService {
             this.chatHistoryRepository.saveAndFlush(chatHistory);
             // set message send to line
             SendingMessageRequest request = new SendingMessageRequest();
-            List<String> to = new ArrayList<>();
-            to.add(chat.getName2());
             List<WebhookMessage> webhookMessageList = new ArrayList<>();
             WebhookMessage webhookMessage = new WebhookMessage();
             webhookMessage.setText(message.getMessage());
             webhookMessage.setType("text");
             webhookMessageList.add(webhookMessage);
-            request.setTo(to);
+            request.setTo(chat.getName2());
             request.setMessages(webhookMessageList);
             this.externalService.pushMessage(request);
             message.setChatId(chat.getChatId());
