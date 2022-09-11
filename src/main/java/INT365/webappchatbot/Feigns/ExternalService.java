@@ -45,16 +45,12 @@ public class ExternalService {
         }
     }
 
-    public void pushMessage(List<SendingMessageRequest> messageRequest) {
-        if (messageRequest.size() > 0) {
-            for (SendingMessageRequest message : messageRequest) {
-                HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
-                httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
-                HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(message, httpHeaders);
-                this.restTemplate.postForObject(this.linePushMessagingApi, entity, Object.class);
-            }
-        }
+    public void pushMessage(SendingMessageRequest messageRequest) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
+        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
+        HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(messageRequest, httpHeaders);
+        this.restTemplate.postForObject(this.linePushMessagingApi, entity, Object.class);
     }
 
     private Object nothingJustKeepingCode(WebhookObject request) {

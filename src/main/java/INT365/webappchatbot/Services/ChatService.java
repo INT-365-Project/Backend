@@ -55,19 +55,17 @@ public class ChatService {
             chatHistory.setMessage(message.getMessage());
             this.chatHistoryRepository.saveAndFlush(chatHistory);
             // set message send to line
-            List<SendingMessageRequest> requestList = new ArrayList<>();
             SendingMessageRequest request = new SendingMessageRequest();
             List<String> to = new ArrayList<>();
             to.add(chat.getName2());
-            request.setTo(to);
             List<WebhookMessage> webhookMessageList = new ArrayList<>();
             WebhookMessage webhookMessage = new WebhookMessage();
             webhookMessage.setText(message.getMessage());
             webhookMessage.setType("text");
             webhookMessageList.add(webhookMessage);
+            request.setTo(to);
             request.setMessages(webhookMessageList);
-            requestList.add(request);
-            this.externalService.pushMessage(requestList);
+            this.externalService.pushMessage(request);
             message.setChatId(chat.getChatId());
             message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : this.externalService.getUserProfile(chat.getName2()).getDisplayName());
             return message;
