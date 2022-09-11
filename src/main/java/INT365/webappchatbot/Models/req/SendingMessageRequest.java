@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class SendingMessageRequest {
     private String replyToken;
-    private List<String> to;
+    private String to;
     private List<WebhookMessage> messages;
 }

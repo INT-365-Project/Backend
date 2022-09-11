@@ -125,9 +125,7 @@ public class BotService {
                     SendingMessageRequest msgResponse = new SendingMessageRequest();
                     List<WebhookMessage> messages = new ArrayList<>();
                     msgResponse.setReplyToken(replyToken);
-                    List<String> to = new ArrayList<>();
-                    to.add(userId);
-                    msgResponse.setTo(to);
+                    msgResponse.setTo(userId);
                     for (Response response : this.getResponseFromText(message.getText())) {
                         WebhookMessage sendingMessage = new WebhookMessage();
                         sendingMessage.setType(response.getResponseType());

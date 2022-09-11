@@ -18,7 +18,7 @@ import java.util.List;
 public class ExternalService {
 
     private final String lineReplyMessagingApi = "https://api.line.me/v2/bot/message/reply";
-    private final String linePushMessagingApi = "https://api.line.me/v2/bot/message/reply";
+    private final String linePushMessagingApi = "https://api.line.me/v2/bot/message/push";
     private final String channelAccessToken = "otHH5PaiURD4VbIuAdyS1MnGxhe5gTw5aH+emXYIT70a1HG3DLazeCT+Te94f8pOHuRAwKySHYetZ+uQrtffwgEbSugS14Zne6TZfxuYgv8qK+KXHumBNt3L2YsJdT6hZcbBvcVSKKlNxXXgvBA8XgdB04t89/1O/w1cDnyilFU=";
     private final String channelId = "1657101758";
     private final String channelSecret = "08ff6b71e9ae45dae62f27b762d8df65";
