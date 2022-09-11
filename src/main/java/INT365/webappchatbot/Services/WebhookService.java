@@ -112,7 +112,7 @@ public class WebhookService {
                     }
                     // chat history detail
                     ChatHistory history = new ChatHistory();
-                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
+//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
                     history.setChatId(chat.getChatId());
 //                    history.setReceiverName(userObject.getDisplayName());
                     history.setReceiverName(userId);
@@ -121,7 +121,7 @@ public class WebhookService {
                     history.setMessage(message.getText());
                     history.setSentDate(new Date());
                     this.chatHistoryRepository.saveAndFlush(history);
-                    this.sendMessageToWebApp(chat, history, userObject.getDisplayName());
+                    this.sendMessageToWebApp(chat, history, "admin");
                 }
             }
         }
