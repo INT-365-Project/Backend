@@ -43,7 +43,7 @@ public class WebhookService {
         // save message to chat history that send back to user
         this.saveMessageFromBot(response);
         // return webhook object to line api
-        this.externalService.replyMessage(response);
+//        this.externalService.replyMessage(response);
 
         return ResponseEntity.ok();
         // use manual flow
@@ -67,9 +67,10 @@ public class WebhookService {
                     }
                     // chat history detail
                     ChatHistory history = new ChatHistory();
-                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
+//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
                     history.setChatId(chat.getChatId());
-                    history.setSenderName(userObject.getDisplayName());
+//                    history.setSenderName(userObject.getDisplayName());
+                    history.setSenderName(userId);
                     history.setReceiverName("admin");
                     // only text
                     history.setMessage(event.getMessage().getText());
@@ -100,9 +101,10 @@ public class WebhookService {
                     }
                     // chat history detail
                     ChatHistory history = new ChatHistory();
-                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
+//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
                     history.setChatId(chat.getChatId());
-                    history.setReceiverName(userObject.getDisplayName());
+//                    history.setReceiverName(userObject.getDisplayName());
+                    history.setReceiverName(userId);
                     history.setSenderName("admin");
                     // only text
                     history.setMessage(message.getText());
