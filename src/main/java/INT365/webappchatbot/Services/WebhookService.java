@@ -9,11 +9,10 @@ import INT365.webappchatbot.Models.Webhook.WebhookEvent;
 import INT365.webappchatbot.Models.Webhook.WebhookMessage;
 import INT365.webappchatbot.Models.Webhook.WebhookObject;
 import INT365.webappchatbot.Models.req.SendingMessageRequest;
-import INT365.webappchatbot.Models.resp.UserProfileResponse;
+import INT365.webappchatbot.Models.resp.ChatObject;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +31,8 @@ public class WebhookService {
     private ExternalService externalService;
     @Autowired
     private BotService botService;
+    @Autowired
+    private ChatService chatService;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
@@ -59,6 +60,7 @@ public class WebhookService {
                     // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
                     // chat detail
                     Chat chat = this.chatRepository.findChatBySenderAndReceiverName("admin", userId) == null ? new Chat() : this.chatRepository.findChatBySenderAndReceiverName("admin", userId);
+                    boolean isChatNull = chat.getChatId() == null;
                     if (chat.getChatId() == null) {
                         chat.setName1("admin");
                         chat.setName2(userId);
@@ -76,10 +78,15 @@ public class WebhookService {
                     history.setMessage(event.getMessage().getText());
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
-                    this.sendMessageToWebApp(chat, history);
+                    if (isChatNull) this.sendNewHistoryChatToWebApp(this.chatService.getChatHistory());
+                    else this.sendMessageToWebApp(chat, history);
                 }
             }
         }
+    }
+
+    private void sendNewHistoryChatToWebApp(List<ChatObject> chatHistory) {
+        this.simpMessagingTemplate.convertAndSend("/updateNewChat", chatHistory);
     }
 
     @Transactional
