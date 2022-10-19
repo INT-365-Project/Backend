@@ -87,7 +87,8 @@ public class WebhookService {
                     // only text
                     history.setType(WebhookMessageType.MESSAGE.getType());
                     history.setMessage(message);
-                    history.setIsRead(isBotResponse ? 1 : 0);
+//                    history.setIsRead(isBotResponse ? 1 : 0); // for deploy
+                    history.setIsRead(0); // for local
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
                     if (isChatNull) {
