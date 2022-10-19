@@ -1,6 +1,7 @@
 package INT365.webappchatbot.Services;
 
 import INT365.webappchatbot.Constants.Status;
+import INT365.webappchatbot.Constants.WebhookMessageType;
 import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
 import INT365.webappchatbot.Feigns.ExternalService;
@@ -36,10 +37,13 @@ public class WebhookService {
     private ChatService chatService;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+    private final String botTurnOnMessage = "เปิดการใช้งานระบบตอบอัตโนมัติ";
+    private final String botTurnOffMessage = "ปิดการใช้งานระบบตอบอัตโนมัติ";
 
     public Object webhookMessageAPI(WebhookObject request) {
         // save message to chat history that send from user
-        this.saveMessageFromLine(request);
+        Boolean isBotResponse = this.saveMessageFromLine(request);
+        if (!isBotResponse) return null;
         // use bot flow
         List<SendingMessageRequest> response = this.botService.responseToWebhook(request);
         // save message to chat history that send back to user
@@ -51,7 +55,8 @@ public class WebhookService {
     }
 
     @Transactional
-    private void saveMessageFromLine(WebhookObject request) {
+    private Boolean saveMessageFromLine(WebhookObject request) {
+        Boolean isBotResponse = true;
         for (WebhookEvent event : request.getEvents()) {
             if (event.getMessage() != null) {
                 String userId = event.getSource().getType().equals("user") ? event.getSource().getUserId() : null;
@@ -59,34 +64,42 @@ public class WebhookService {
                 if (event.getMessage().getType().equals("text")) {
                     // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
                     // chat detail
+                    String message = event.getMessage().getText();
                     Chat chat = this.chatRepository.findChatBySenderAndReceiverName("admin", userId) == null ? new Chat() : this.chatRepository.findChatBySenderAndReceiverName("admin", userId);
                     boolean isChatNull = chat.getChatId() == null;
                     if (chat.getChatId() == null) {
                         chat.setName1("admin");
                         chat.setName2(userId);
                         chat.setCreateDate(new Date());
-                        chat = this.chatRepository.saveAndFlush(chat);
+                        chat.setIsBotResponse(message.equals(this.botTurnOnMessage) ? 1 : message.equals(this.botTurnOffMessage) ? 0 : 1);
                     }
+                    chat = this.chatRepository.saveAndFlush(chat);
+                    isBotResponse = Tools.convertIntToBoolean(chat.getIsBotResponse());
                     // chat history detail
                     ChatHistory history = new ChatHistory();
-                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
-                    String displayName = userObject.getDisplayName();
+//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
+//                    String displayName = userObject.getDisplayName(); // for deploy
+                    String displayName = userId; // for local
                     history.setChatId(chat.getChatId());
 //                    history.setSenderName(userObject.getDisplayName());
                     history.setSenderName(userId);
                     history.setReceiverName("admin");
                     // only text
-                    history.setMessage(event.getMessage().getText());
+                    history.setType(WebhookMessageType.MESSAGE.getType());
+                    history.setMessage(message);
+                    history.setIsRead(isBotResponse ? 1 : 0);
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
                     if (isChatNull) {
-                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl()));
+//                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl())); // for deploy
+                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, null)); // for local
                     } else {
                         this.sendMessageToWebApp(chat, history, displayName);
                     }
                 }
             }
         }
+        return isBotResponse;
     }
 
     private void sendNewHistoryChatToWebApp(ChatObject chatHistory) {
@@ -112,11 +125,11 @@ public class WebhookService {
                     }
                     // chat history detail
                     ChatHistory history = new ChatHistory();
-//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
                     history.setChatId(chat.getChatId());
-//                    history.setReceiverName(userObject.getDisplayName());
                     history.setReceiverName(userId);
                     history.setSenderName("admin");
+                    history.setType("message");
+                    history.setIsRead(1);
                     // only text
                     history.setMessage(message.getText());
                     history.setSentDate(new Date());

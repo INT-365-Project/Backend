@@ -23,8 +23,14 @@ public class ChatHistory {
     @Column(name = "CHAT_ID")
     private Long chatId;
 
+    @Column(name = "TYPE")
+    private String type;
+
     @Column(name = "MESSAGE")
     private String message;
+
+    @Column(name = "IS_READ")
+    private Integer isRead;
 
     @Column(name = "SENDER_NAME")
     private String senderName;

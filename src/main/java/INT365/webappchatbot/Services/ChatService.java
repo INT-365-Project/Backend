@@ -43,6 +43,7 @@ public class ChatService {
                 newChat.setChatId(null);
                 newChat.setName1(message.getSenderName());
                 newChat.setName2(message.getReceiverName());
+                newChat.setIsBotResponse(1);
                 newChat.setCreateDate(new Date());
                 chat = this.chatRepository.saveAndFlush(newChat);
             }
@@ -51,6 +52,8 @@ public class ChatService {
             chatHistory.setChatId(chat.getChatId() == null ? null : chat.getChatId());
             chatHistory.setSenderName(message.getSenderName());
             chatHistory.setReceiverName(message.getReceiverName());
+            chatHistory.setType(message.getType());
+            chatHistory.setIsRead(0);
             chatHistory.setSentDate(message.getDate());
             chatHistory.setMessage(message.getMessage());
             this.chatHistoryRepository.saveAndFlush(chatHistory);
@@ -63,9 +66,12 @@ public class ChatService {
             webhookMessageList.add(webhookMessage);
             request.setTo(chat.getName2());
             request.setMessages(webhookMessageList);
-            this.externalService.pushMessage(request);
+//            this.externalService.pushMessage(request); // for deploy
             message.setChatId(chat.getChatId());
-            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : this.externalService.getUserProfile(chat.getName2()).getDisplayName());
+//            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : this.externalService.getUserProfile(chat.getName2()).getDisplayName());
+            // ^ for deploy
+            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : chat.getName2());
+            // ^ for local
             return message;
         }
         // case public chat >> receiverName == null
@@ -75,7 +81,9 @@ public class ChatService {
             chatHistory.setChatId(null);
             chatHistory.setSenderName(message.getSenderName());
             chatHistory.setSentDate(message.getDate());
+            chatHistory.setType(message.getType());
             chatHistory.setMessage(message.getMessage());
+            chatHistory.setIsRead(0);
             this.chatHistoryRepository.saveAndFlush(chatHistory);
             return null;
         }
@@ -85,18 +93,20 @@ public class ChatService {
         List<ChatObject> responseList = new ArrayList<>();
         for (Chat chat : this.chatRepository.findAll()) {
             ChatObject chatObject = new ChatObject();
-            UserProfileResponse userProfile = this.externalService.getUserProfile(chat.getName2());
-            String displayName = userProfile.getDisplayName();
-//            String displayName = chat.getName2();
+//            UserProfileResponse userProfile = this.externalService.getUserProfile(chat.getName2()); // for deploy
+//            String displayName = userProfile.getDisplayName(); // for deploy
+            String displayName = chat.getName2();
             chatObject.setChatId(chat.getChatId());
             chatObject.setUserId(chat.getName2());
             chatObject.setDisplayName(displayName);
-            chatObject.setImageUrl(userProfile.getPictureUrl());
-//            chatObject.setImageUrl("url");
+//            chatObject.setImageUrl(userProfile.getPictureUrl()); // for deploy
+            chatObject.setImageUrl("url"); // for local
             List<ChatHistoryObject> chatHistoryList = new ArrayList<>();
             for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
                 ChatHistoryObject chatHistoryObject = new ChatHistoryObject();
                 chatHistoryObject.setMessage(chatHistory.getMessage());
+                chatHistoryObject.setType(chatHistory.getType());
+                chatHistoryObject.setIsRead(Tools.convertIntToBoolean(chatHistory.getIsRead()));
                 chatHistoryObject.setSenderName(chatHistory.getSenderName().equals("admin") ? "admin" : displayName);
                 chatHistoryObject.setSentDate(chatHistory.getSentDate());
                 chatHistoryList.add(chatHistoryObject);
@@ -118,8 +128,10 @@ public class ChatService {
         for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
             ChatHistoryObject chatHistoryObject = new ChatHistoryObject();
             chatHistoryObject.setMessage(chatHistory.getMessage());
+            chatHistoryObject.setType(chatHistory.getType());
             chatHistoryObject.setSenderName(chatHistory.getSenderName().equals("admin") ? "admin" : chatHistory.getSenderName());
             chatHistoryObject.setSentDate(chatHistory.getSentDate());
+            chatHistoryObject.setIsRead(Tools.convertIntToBoolean(chatHistory.getIsRead()));
             chatHistoryList.add(chatHistoryObject);
         }
         response.setChatHistory(chatHistoryList);

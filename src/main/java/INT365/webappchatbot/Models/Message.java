@@ -10,6 +10,7 @@ public class Message {
     private Long chatId;
     private String senderName;
     private String receiverName;
+    private String type;
     private String message;
     private Date date;
     private Status status;

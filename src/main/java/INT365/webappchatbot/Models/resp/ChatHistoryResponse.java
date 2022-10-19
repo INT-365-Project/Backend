@@ -10,6 +10,8 @@ import java.util.Date;
 public class ChatHistoryResponse {
     private String senderName;
     private String receiverName;
+    private String type;
     private String message;
+    private Integer isRead;
     private Date sentDate;
 }

@@ -26,6 +26,9 @@ public class Chat {
     @Column(name = "NAME_2")
     private String name2;
 
+    @Column(name = "IS_BOT_RESPONSE")
+    private Integer isBotResponse;
+
     @Column(name = "CREATE_DATE", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createDate;
