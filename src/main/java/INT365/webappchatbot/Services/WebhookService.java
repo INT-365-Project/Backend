@@ -38,7 +38,9 @@ public class WebhookService {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
     private final String botTurnOnMessage = "เปิดการใช้งานระบบตอบอัตโนมัติ";
-    private final String botTurnOffMessage = "ปิดการใช้งานระบบตอบอัตโนมัติ";
+//    private final String botTurnOffMessage = "ปิดการใช้งานระบบตอบอัตโนมัติ"; // for deploy
+    private final String botTurnOffMessage = "ปิด"; // for deploy
+
 
     public Object webhookMessageAPI(WebhookObject request) {
         // save message to chat history that send from user
@@ -49,7 +51,7 @@ public class WebhookService {
         // save message to chat history that send back to user
         this.saveMessageFromBot(response);
         // return webhook object to line api
-        this.externalService.replyMessage(response);
+//        this.externalService.replyMessage(response); // for deploy
         return null;
         // use manual flow
     }
@@ -87,8 +89,8 @@ public class WebhookService {
                     // only text
                     history.setType(WebhookMessageType.MESSAGE.getType());
                     history.setMessage(message);
-//                    history.setIsRead(isBotResponse ? 1 : 0); // for deploy
-                    history.setIsRead(0); // for local
+                    history.setIsRead(isBotResponse ? 1 : 0); // for deploy
+//                    history.setIsRead(0); // for local
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
                     if (isChatNull) {

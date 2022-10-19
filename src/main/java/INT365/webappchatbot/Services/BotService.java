@@ -145,7 +145,7 @@ public class BotService {
     }
 
     private List<Response> getResponseFromText(String text) {
-        List<Bot> filteredExpression = this.botRepository.findAll().isEmpty() ? new ArrayList<>() : this.botRepository.findAll().stream().filter((expression) -> expression.getExpression().contains(text)).collect(Collectors.toList());
+        List<Bot> filteredExpression = this.botRepository.findAll().isEmpty() ? new ArrayList<>() : this.botRepository.findAll().stream().filter((expression) -> expression.getExpression().contains(text) || text.contains(expression.getExpression())).collect(Collectors.toList());
         if (filteredExpression.size() == 0) {
             List<Response> responseList = new ArrayList<>();
             Response response = new Response();
