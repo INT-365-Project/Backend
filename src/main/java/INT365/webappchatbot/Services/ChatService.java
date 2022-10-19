@@ -142,8 +142,9 @@ public class ChatService {
         if (chat == null) {
             return;
         }
-        for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
+        for (ChatHistory chatHistory : this.chatHistoryRepository.findChatHistoriesEntityByChatId(chat.getChatId())) {
             chatHistory.setIsRead(1);
+            this.chatHistoryRepository.saveAndFlush(chatHistory);
         }
     }
 }
