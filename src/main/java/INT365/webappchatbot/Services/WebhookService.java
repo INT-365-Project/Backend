@@ -73,8 +73,9 @@ public class WebhookService {
                         chat.setName1("admin");
                         chat.setName2(userId);
                         chat.setCreateDate(new Date());
-                        chat.setIsBotResponse(message.equals(this.botTurnOnMessage) ? 1 : message.equals(this.botTurnOffMessage) ? 0 : 1);
+                        chat.setIsBotResponse(1);
                     }
+                    chat.setIsBotResponse(message.equals(this.botTurnOnMessage) ? 1 : message.equals(this.botTurnOffMessage) ? 0 : chat.getIsBotResponse());
                     chat = this.chatRepository.saveAndFlush(chat);
                     isBotResponse = Tools.convertIntToBoolean(chat.getIsBotResponse());
                     // chat history detail
