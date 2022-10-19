@@ -10,11 +10,12 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-//@CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
 @Controller
 @RequestMapping("/api")
 public class ChatController {
@@ -39,8 +40,8 @@ public class ChatController {
         if (message.getStatus().equals(Status.READ)) {
             this.chatService.setMessageRead(message);
         }
-        simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", message); // path > /user/{receiverName}/private
         if (message.getStatus().equals(Status.MESSAGE)) {
+            simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", message); // path > /user/{receiverName}/private
             return this.chatService.saveChat(message);
         }
         return message;
