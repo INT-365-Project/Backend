@@ -36,6 +36,9 @@ public class ChatController {
 
     @MessageMapping("/private-message")
     public Message receivePrivateMessage(@Payload Message message) {
+        if (message.getStatus().equals(Status.READ)) {
+            this.chatService.setMessageRead(message);
+        }
         simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", message); // path > /user/{receiverName}/private
         if (message.getStatus().equals(Status.MESSAGE)) {
             return this.chatService.saveChat(message);

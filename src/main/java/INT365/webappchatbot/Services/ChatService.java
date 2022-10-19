@@ -9,7 +9,6 @@ import INT365.webappchatbot.Models.req.SendingMessageRequest;
 import INT365.webappchatbot.Models.resp.ChatHistoryObject;
 import INT365.webappchatbot.Models.resp.ChatHistoryResponse;
 import INT365.webappchatbot.Models.resp.ChatObject;
-import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -136,5 +135,15 @@ public class ChatService {
         }
         response.setChatHistory(chatHistoryList);
         return response;
+    }
+
+    public void setMessageRead(Message message) {
+        Chat chat = chatRepository.findChatBySenderAndReceiverName(message.getSenderName(), message.getReceiverName());
+        if (chat == null) {
+            return;
+        }
+        for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
+            chatHistory.setIsRead(1);
+        }
     }
 }
