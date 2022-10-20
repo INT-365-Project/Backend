@@ -11,7 +11,6 @@ import INT365.webappchatbot.Models.Webhook.WebhookMessage;
 import INT365.webappchatbot.Models.Webhook.WebhookObject;
 import INT365.webappchatbot.Models.req.SendingMessageRequest;
 import INT365.webappchatbot.Models.resp.ChatObject;
-import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,7 @@ public class WebhookService {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
     private final String botTurnOnMessage = "เปิดการใช้งานระบบตอบอัตโนมัติ";
-//    private final String botTurnOffMessage = "ปิดการใช้งานระบบตอบอัตโนมัติ"; // for deploy
+    //    private final String botTurnOffMessage = "ปิดการใช้งานระบบตอบอัตโนมัติ"; // for deploy
     private final String botTurnOffMessage = "ปิด"; // for deploy
 
 
@@ -63,7 +62,7 @@ public class WebhookService {
             if (event.getMessage() != null) {
                 String userId = event.getSource().getType().equals("user") ? event.getSource().getUserId() : null;
                 // focus on only user's text message
-                if (event.getMessage().getType().equals("text")) {
+                if (event.getMessage().getType().equals(WebhookMessageType.TEXT.getType())) {
                     // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
                     // chat detail
                     String message = event.getMessage().getText();
@@ -100,6 +99,42 @@ public class WebhookService {
                     } else {
                         this.sendMessageToWebApp(chat, history, displayName);
                     }
+                } else if (event.getMessage().getType().equals(WebhookMessageType.STICKER.getType())) {
+                    // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
+                    // chat detail
+                    Chat chat = this.chatRepository.findChatBySenderAndReceiverName("admin", userId) == null ? new Chat() : this.chatRepository.findChatBySenderAndReceiverName("admin", userId);
+                    boolean isChatNull = chat.getChatId() == null;
+                    if (chat.getChatId() == null) {
+                        chat.setName1("admin");
+                        chat.setName2(userId);
+                        chat.setCreateDate(new Date());
+                        chat.setIsBotResponse(1);
+                    }
+                    chat.setIsBotResponse(chat.getIsBotResponse() == null ? 1 : chat.getIsBotResponse());
+                    chat = this.chatRepository.saveAndFlush(chat);
+                    isBotResponse = Tools.convertIntToBoolean(chat.getIsBotResponse());
+                    // chat history detail
+                    ChatHistory history = new ChatHistory();
+//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
+//                    String displayName = userObject.getDisplayName(); // for deploy
+                    String displayName = userId; // for local
+                    history.setChatId(chat.getChatId());
+//                    history.setSenderName(userObject.getDisplayName());
+                    history.setSenderName(userId);
+                    history.setReceiverName("admin");
+                    // only text
+                    history.setType(WebhookMessageType.MESSAGE.getType());
+                    history.setMessage(event.getMessage().getPackageId() + "," + event.getMessage().getStickerId());
+                    history.setIsRead(isBotResponse ? 1 : 0); // for deploy
+//                    history.setIsRead(0); // for local
+                    history.setSentDate(event.getTimestamp());
+                    this.chatHistoryRepository.saveAndFlush(history);
+                    if (isChatNull) {
+//                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl())); // for deploy
+                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, null)); // for local
+                    } else {
+                        this.sendMessageToWebApp(chat, history, displayName);
+                    }
                 }
             }
         }
@@ -117,7 +152,7 @@ public class WebhookService {
             String userId = messageRequest.getTo();
             for (WebhookMessage message : messageRequest.getMessages()) {
                 // focus on only user's text message
-                if (message.getType().equals("text")) {
+                if (message.getType().equals(WebhookMessageType.TEXT.getType())) {
                     // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
                     // chat detail
                     Chat chat = this.chatRepository.findChatBySenderAndReceiverName("admin", userId) == null ? new Chat() : this.chatRepository.findChatBySenderAndReceiverName("admin", userId);
@@ -132,10 +167,32 @@ public class WebhookService {
                     history.setChatId(chat.getChatId());
                     history.setReceiverName(userId);
                     history.setSenderName("admin");
-                    history.setType("message");
+                    history.setType(WebhookMessageType.TEXT.getType());
                     history.setIsRead(1);
                     // only text
                     history.setMessage(message.getText());
+                    history.setSentDate(new Date());
+                    this.chatHistoryRepository.saveAndFlush(history);
+                    this.sendMessageToWebApp(chat, history, "admin");
+                } else if (message.getType().equals(WebhookMessageType.STICKER.getType())) {
+                    // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
+                    // chat detail
+                    Chat chat = this.chatRepository.findChatBySenderAndReceiverName("admin", userId) == null ? new Chat() : this.chatRepository.findChatBySenderAndReceiverName("admin", userId);
+                    if (chat.getChatId() == null) {
+                        chat.setName1("admin");
+                        chat.setName2(userId);
+                        chat.setCreateDate(new Date());
+                        chat = this.chatRepository.saveAndFlush(chat);
+                    }
+                    // chat history detail
+                    ChatHistory history = new ChatHistory();
+                    history.setChatId(chat.getChatId());
+                    history.setReceiverName(userId);
+                    history.setSenderName("admin");
+                    history.setType(WebhookMessageType.STICKER.getType());
+                    history.setIsRead(1);
+                    // only text
+                    history.setMessage(message.getPackageId() + "," + message.getStickerId());
                     history.setSentDate(new Date());
                     this.chatHistoryRepository.saveAndFlush(history);
                     this.sendMessageToWebApp(chat, history, "admin");
