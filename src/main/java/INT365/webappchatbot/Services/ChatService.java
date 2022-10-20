@@ -1,6 +1,5 @@
 package INT365.webappchatbot.Services;
 
-import INT365.webappchatbot.Constants.WebhookMessageType;
 import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
 import INT365.webappchatbot.Feigns.ExternalService;
@@ -71,8 +70,6 @@ public class ChatService {
 //            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : this.externalService.getUserProfile(chat.getName2()).getDisplayName());
             // ^ for deploy
             message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : chat.getName2());
-            message.setType(WebhookMessageType.TEXT.getType());
-            message.setIsRead(false);
             // ^ for local
             return message;
         }

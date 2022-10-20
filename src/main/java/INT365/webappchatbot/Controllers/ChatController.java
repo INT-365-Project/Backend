@@ -41,9 +41,8 @@ public class ChatController {
             this.chatService.setMessageRead(message);
         }
         if (message.getStatus().equals(Status.MESSAGE)) {
-            Message sendMessage = this.chatService.saveChat(message);
-            simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", sendMessage); // path > /user/{receiverName}/private
-            return sendMessage;
+            simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", message); // path > /user/{receiverName}/private
+            return this.chatService.saveChat(message);
         }
         return message;
     }
