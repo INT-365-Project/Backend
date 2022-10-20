@@ -1,6 +1,7 @@
 package INT365.webappchatbot.Models;
 
 import INT365.webappchatbot.Constants.Status;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,4 +16,6 @@ public class Message {
     private Date date;
     private Status status;
     private String displayName;
+    @JsonProperty("isRead")
+    private Boolean isRead;
 }
