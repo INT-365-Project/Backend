@@ -87,7 +87,7 @@ public class WebhookService {
                     history.setSenderName(userId);
                     history.setReceiverName("admin");
                     // only text
-                    history.setType(WebhookMessageType.MESSAGE.getType());
+                    history.setType(WebhookMessageType.TEXT.getType());
                     history.setMessage(message);
                     history.setIsRead(isBotResponse ? 1 : 0); // for deploy
 //                    history.setIsRead(0); // for local
