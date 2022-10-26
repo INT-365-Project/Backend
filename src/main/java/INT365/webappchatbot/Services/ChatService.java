@@ -107,7 +107,7 @@ public class ChatService {
                 chatHistoryObject.setType(chatHistory.getType());
                 chatHistoryObject.setIsRead(Tools.convertIntToBoolean(chatHistory.getIsRead()));
                 chatHistoryObject.setSenderName(chatHistory.getSenderName().equals("admin") ? "admin" : chatHistory.getSenderName());
-                chatHistoryObject.setSenderName(chatHistory.getReceiverName().equals("admin") ? "admin" : chatHistory.getReceiverName());
+                chatHistoryObject.setReceiverName(chatHistory.getReceiverName().equals("admin") ? "admin" : chatHistory.getReceiverName());
                 chatHistoryObject.setSentDate(chatHistory.getSentDate());
                 chatHistoryList.add(chatHistoryObject);
             }
@@ -130,7 +130,7 @@ public class ChatService {
             chatHistoryObject.setMessage(chatHistory.getMessage());
             chatHistoryObject.setType(chatHistory.getType());
             chatHistoryObject.setSenderName(chatHistory.getSenderName().equals("admin") ? "admin" : chatHistory.getSenderName());
-            chatHistoryObject.setSenderName(chatHistory.getReceiverName().equals("admin") ? "admin" : chatHistory.getReceiverName());
+            chatHistoryObject.setReceiverName(chatHistory.getReceiverName().equals("admin") ? "admin" : chatHistory.getReceiverName());
             chatHistoryObject.setSentDate(chatHistory.getSentDate());
             chatHistoryObject.setIsRead(Tools.convertIntToBoolean(chatHistory.getIsRead()));
             chatHistoryList.add(chatHistoryObject);
