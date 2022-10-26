@@ -8,6 +8,7 @@ import java.util.Date;
 @Data
 public class ChatHistoryObject {
     private String senderName;
+    private String receiverName;
     private String type;
     private String message;
     private Date sentDate;
