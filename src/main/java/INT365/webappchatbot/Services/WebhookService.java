@@ -250,6 +250,8 @@ public class WebhookService {
         message.setType(chatHistory.getType());
         message.setIsRead(Tools.convertIntToBoolean(chatHistory.getIsRead()));
         message.setDate(chatHistory.getSentDate());
+        message.setOriginalContentUrl(chatHistory.getOriginalContentUrl());
+        message.setPreviewImageUrl(chatHistory.getPreviewImageUrl());
         message.setDisplayName(displayName);
         simpMessagingTemplate.convertAndSendToUser(chat.getName2(), "/private", message);
     }
