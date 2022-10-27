@@ -1,5 +1,6 @@
 package INT365.webappchatbot.Services;
 
+import INT365.webappchatbot.Constants.WebhookMessageType;
 import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
 import INT365.webappchatbot.Feigns.ExternalService;
@@ -13,6 +14,7 @@ import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -24,11 +26,14 @@ import java.util.List;
 public class ChatService {
     @Autowired
     private ChatRepository chatRepository;
-
     @Autowired
     private ChatHistoryRepository chatHistoryRepository;
     @Autowired
+    private FileService fileService;
+    @Autowired
     private ExternalService externalService;
+    @Value("${http.image.path}")
+    private String imagePath;
 
     @Transactional
     public Message saveChat(Message message) {
@@ -52,9 +57,26 @@ public class ChatService {
             chatHistory.setSenderName(message.getSenderName());
             chatHistory.setReceiverName(message.getReceiverName());
             chatHistory.setType(message.getType());
+            chatHistory.setMessage(message.getMessage());
+            if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
+                String base64 = message.getMessage();
+                String imageExtension = base64.substring(base64.indexOf("/") + 1, base64.indexOf(";", 0));
+                String randomNumber = this.randomNumber();
+                String filePath = this.fileService.uploadFile(randomNumber, message.getMessage(), randomNumber + "." + imageExtension, "chat").get("filePath");
+                chatHistory.setMessage(filePath);
+                message.setMessage(filePath);
+            }
             chatHistory.setIsRead(0);
             chatHistory.setSentDate(message.getDate());
-            chatHistory.setMessage(message.getMessage());
+            chatHistory = this.chatHistoryRepository.saveAndFlush(chatHistory);
+            // set image url
+            if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
+                String url = imagePath + chatHistory.getChatId() + chatHistory.getHistoryId();
+                chatHistory.setOriginalContentUrl(url);
+                chatHistory.setPreviewImageUrl(url);
+                message.setOriginalContentUrl(url);
+                message.setPreviewImageUrl(url);
+            }
             this.chatHistoryRepository.saveAndFlush(chatHistory);
             // set message send to line
             SendingMessageRequest request = new SendingMessageRequest();
@@ -148,5 +170,18 @@ public class ChatService {
             chatHistory.setIsRead(1);
             this.chatHistoryRepository.saveAndFlush(chatHistory);
         }
+    }
+
+    private String randomNumber() {
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder stringBuilder = new StringBuilder();
+        int max = alphabet.length() - 1;
+        int min = 0;
+        int range = max - min + 1;
+        for (int i = 0; i < 8; i++) {
+            int randomNumber = (int) (Math.random() * range) + min;
+            stringBuilder.append(alphabet.charAt(randomNumber));
+        }
+        return stringBuilder.toString();
     }
 }

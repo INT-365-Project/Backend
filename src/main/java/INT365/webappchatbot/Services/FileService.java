@@ -1,6 +1,9 @@
 package INT365.webappchatbot.Services;
 
+import INT365.webappchatbot.Entities.ChatHistory;
+import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -13,15 +16,21 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class FileService {
 
+    private final String profilePath = "/src/main/resources/storage/profile/";
+    private final String chatPath = "/src/main/resources/storage/chat/";
+    @Autowired
+    private ChatHistoryRepository chatHistoryRepository;
+
     @Transactional
-    public Map<String, String> uploadFile(String fileName, String base64, String originalFileName) {
+    public Map<String, String> uploadFile(String fileName, String base64, String originalFileName, String type) {
         Map<String, String> map = new HashMap<>();
         try {
-            String filePath = new File(".").getCanonicalPath() + "/src/main/resources/storage/profile/" + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
+            String filePath = new File(".").getCanonicalPath() + (type.equals("news") ? this.profilePath : this.chatPath) + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
             byte[] decodedBytes = Base64.getDecoder().decode(base64);
             Path path = Paths.get(filePath);
             Files.createDirectories(path.getParent());
@@ -45,6 +54,17 @@ public class FileService {
             e.printStackTrace();
         }
         return base64;
+    }
+
+    public byte[] getImageBytes(Long chatId, Long historyId) {
+        ChatHistory chatHistory = chatHistoryRepository.findChatHistoriesEntityByChatId(chatId).stream().filter(history -> history.getHistoryId() == historyId).collect(Collectors.toList()).get(0);
+        byte[] bytes = null;
+        try {
+            bytes = FileUtils.readFileToByteArray(new File(chatHistory.getMessage()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
     public void deleteFile(String filePath) {

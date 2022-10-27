@@ -13,6 +13,8 @@ public class Message {
     private String receiverName;
     private String type;
     private String message;
+    private String originalContentUrl;
+    private String previewImageUrl;
     private Date date;
     private Status status;
     private String displayName;

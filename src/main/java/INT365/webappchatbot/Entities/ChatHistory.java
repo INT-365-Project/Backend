@@ -32,6 +32,12 @@ public class ChatHistory {
     @Column(name = "IS_READ")
     private Integer isRead;
 
+    @Column(name = "ORIGINAL_CONTENT_URL")
+    private String originalContentUrl;
+
+    @Column(name = "PREVIEW_IMAGE_URL")
+    private String previewImageUrl;
+
     @Column(name = "SENDER_NAME")
     private String senderName;
 

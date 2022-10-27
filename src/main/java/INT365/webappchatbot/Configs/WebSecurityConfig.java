@@ -55,6 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST, "/api/reports/createReport").permitAll();
         httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/api/news", "/api/news/").permitAll();
         httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST, "/api/viewFileByPath").permitAll();
+        httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/api/viewImage/**").permitAll();
         httpSecurity.authorizeRequests().antMatchers("/api/chat", "/api/chat/**","/api/webhook/test").permitAll();
 // dont authenticate this particular request
         //.authorizeRequests().antMatchers("/authenticate").permitAll().

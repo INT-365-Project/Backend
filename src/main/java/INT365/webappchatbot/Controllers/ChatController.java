@@ -1,6 +1,7 @@
 package INT365.webappchatbot.Controllers;
 
 import INT365.webappchatbot.Constants.Status;
+import INT365.webappchatbot.Constants.WebhookMessageType;
 import INT365.webappchatbot.Models.Message;
 import INT365.webappchatbot.Models.resp.ChatObject;
 import INT365.webappchatbot.Services.ChatService;
@@ -43,6 +44,9 @@ public class ChatController {
         if (message.getStatus().equals(Status.MESSAGE)) {
 //            simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", message); // path > /user/{receiverName}/private
             return this.chatService.saveChat(message);
+        }
+        if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
+            simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", this.chatService.saveChat(message)); // path > /user/{receiverName}/private
         }
         return message;
     }

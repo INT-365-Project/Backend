@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
- @CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api")
 public class FileController {
@@ -27,5 +27,10 @@ public class FileController {
                 .responseMessage(ModelConstant.OK.getMessage())
                 .responseData(map)
                 .build();
+    }
+
+    @GetMapping("/viewImage/{chatId}/{historyId}")
+    public Object viewImage(@PathVariable("chatId") Long chatId, @PathVariable("historyId") Long historyId) {
+        return this.fileService.getImageBytes(chatId, historyId);
     }
 }

@@ -11,6 +11,8 @@ public class ChatHistoryObject {
     private String receiverName;
     private String type;
     private String message;
+    private String originalContentUrl;
+    private String previewImageUrl;
     private Date sentDate;
     @JsonProperty("isRead")
     private Boolean isRead;
