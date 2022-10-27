@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,7 +58,7 @@ public class FileService {
     }
 
     public byte[] getImageBytes(Long chatId, Long historyId) {
-        ChatHistory chatHistory = chatHistoryRepository.findChatHistoriesEntityByChatId(chatId).stream().filter(history -> history.getHistoryId() == historyId).collect(Collectors.toList()).get(0);
+        ChatHistory chatHistory = chatHistoryRepository.findChatHistoriesEntityByChatId(chatId).stream().filter(history -> Objects.equals(history.getHistoryId(), historyId)).collect(Collectors.toList()).get(0);
         byte[] bytes = null;
         try {
             bytes = FileUtils.readFileToByteArray(new File(chatHistory.getMessage()));
