@@ -135,6 +135,7 @@ public class WebhookService {
                     } else {
                         this.sendMessageToWebApp(chat, history, displayName);
                     }
+                    
                 } else if (event.getMessage().getType().equals(WebhookMessageType.IMAGE.getType())) {
                     WebhookMessage message = event.getMessage();
                     // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
