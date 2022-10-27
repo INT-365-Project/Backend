@@ -62,7 +62,7 @@ public class ChatService {
                 String base64 = message.getMessage();
                 String imageExtension = base64.substring(base64.indexOf("/") + 1, base64.indexOf(";", 0));
                 String randomNumber = this.randomNumber();
-                String filePath = this.fileService.uploadFile(randomNumber, message.getMessage(), randomNumber + "." + imageExtension, "chat").get("filePath");
+                String filePath = this.fileService.uploadFile(randomNumber, message.getMessage().split(",", 0)[1], randomNumber + "." + imageExtension, "chat").get("filePath");
                 chatHistory.setMessage(filePath);
                 message.setMessage(filePath);
             }
