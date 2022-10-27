@@ -71,7 +71,7 @@ public class ChatService {
             chatHistory = this.chatHistoryRepository.saveAndFlush(chatHistory);
             // set image url
             if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
-                String url = imagePath + chatHistory.getChatId() + chatHistory.getHistoryId();
+                String url = imagePath + chatHistory.getChatId() + "/" + chatHistory.getHistoryId();
                 chatHistory.setOriginalContentUrl(url);
                 chatHistory.setPreviewImageUrl(url);
                 message.setOriginalContentUrl(url);
