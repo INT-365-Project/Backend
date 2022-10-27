@@ -135,6 +135,45 @@ public class WebhookService {
                     } else {
                         this.sendMessageToWebApp(chat, history, displayName);
                     }
+                } else if (event.getMessage().getType().equals(WebhookMessageType.IMAGE.getType())) {
+                    WebhookMessage message = event.getMessage();
+                    // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
+                    // chat detail
+                    Chat chat = this.chatRepository.findChatBySenderAndReceiverName("admin", userId) == null ? new Chat() : this.chatRepository.findChatBySenderAndReceiverName("admin", userId);
+                    boolean isChatNull = chat.getChatId() == null;
+                    if (chat.getChatId() == null) {
+                        chat.setName1("admin");
+                        chat.setName2(userId);
+                        chat.setCreateDate(new Date());
+                        chat.setIsBotResponse(1);
+                    }
+                    chat.setIsBotResponse(chat.getIsBotResponse() == null ? 1 : chat.getIsBotResponse());
+                    chat = this.chatRepository.saveAndFlush(chat);
+                    isBotResponse = Tools.convertIntToBoolean(chat.getIsBotResponse());
+                    // chat history detail
+                    ChatHistory history = new ChatHistory();
+//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
+//                    String displayName = userObject.getDisplayName(); // for deploy
+                    String displayName = userId; // for local
+                    history.setChatId(chat.getChatId());
+//                    history.setSenderName(userObject.getDisplayName());
+                    history.setSenderName(userId);
+                    history.setReceiverName("admin");
+                    // only text
+                    history.setType(WebhookMessageType.IMAGE.getType());
+                    history.setMessage("image");
+                    history.setPreviewImageUrl(message.getPreviewImageUrl());
+                    history.setOriginalContentUrl(message.getOriginalContentUrl());
+                    history.setIsRead(isBotResponse ? 1 : 0); // for deploy
+//                    history.setIsRead(0); // for local
+                    history.setSentDate(event.getTimestamp());
+                    this.chatHistoryRepository.saveAndFlush(history);
+                    if (isChatNull) {
+//                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl())); // for deploy
+                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, null)); // for local
+                    } else {
+                        this.sendMessageToWebApp(chat, history, displayName);
+                    }
                 }
             }
         }

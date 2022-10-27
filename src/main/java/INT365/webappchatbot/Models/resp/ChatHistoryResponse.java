@@ -14,4 +14,6 @@ public class ChatHistoryResponse {
     private String message;
     private Integer isRead;
     private Date sentDate;
+    private String originalContentUrl;
+    private String previewImageUrl;
 }

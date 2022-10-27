@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface ChatHistoryRepository extends JpaRepository<ChatHistory, Long> {
 
-    @Query("select new INT365.webappchatbot.Models.resp.ChatHistoryResponse(h.senderName,h.receiverName,h.type,h.message,h.isRead,h.sentDate) from ChatHistory h join Chat c on c.chatId = h.chatId where h.chatId = :chatId order by h.historyId asc")
+    @Query("select new INT365.webappchatbot.Models.resp.ChatHistoryResponse(h.senderName,h.receiverName,h.type,h.message,h.isRead,h.sentDate,h.originalContentUrl,h.previewImageUrl) from ChatHistory h join Chat c on c.chatId = h.chatId where h.chatId = :chatId order by h.historyId asc")
     List<ChatHistoryResponse> findChatHistoriesByChatId(@Param("chatId") Long chatId);
 
     @Query("select h from ChatHistory h where h.chatId = :chatId")
