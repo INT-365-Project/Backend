@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-@CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
+//@CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
 @Controller
 @RequestMapping("/api")
 public class ChatController {

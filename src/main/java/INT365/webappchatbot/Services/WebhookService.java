@@ -11,6 +11,7 @@ import INT365.webappchatbot.Models.Webhook.WebhookMessage;
 import INT365.webappchatbot.Models.Webhook.WebhookObject;
 import INT365.webappchatbot.Models.req.SendingMessageRequest;
 import INT365.webappchatbot.Models.resp.ChatObject;
+import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,8 @@ public class WebhookService {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
     private final String botTurnOnMessage = "เปิดการใช้งานระบบตอบอัตโนมัติ";
-    //    private final String botTurnOffMessage = "ปิดการใช้งานระบบตอบอัตโนมัติ"; // for deploy
-    private final String botTurnOffMessage = "ปิด"; // for deploy
+        private final String botTurnOffMessage = "ปิดการใช้งานระบบตอบอัตโนมัติ"; // for deploy
+//    private final String botTurnOffMessage = "ปิด"; // for deploy
 
 
     public Object webhookMessageAPI(WebhookObject request) {
@@ -50,7 +51,7 @@ public class WebhookService {
         // save message to chat history that send back to user
         this.saveMessageFromBot(response);
         // return webhook object to line api
-//        this.externalService.replyMessage(response); // for deploy
+        this.externalService.replyMessage(response); // for deploy
         return null;
         // use manual flow
     }
@@ -79,9 +80,9 @@ public class WebhookService {
                     isBotResponse = Tools.convertIntToBoolean(chat.getIsBotResponse());
                     // chat history detail
                     ChatHistory history = new ChatHistory();
-//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
-//                    String displayName = userObject.getDisplayName(); // for deploy
-                    String displayName = userId; // for local
+                    UserProfileResponse userObject = this.externalService.getUserProfile(userId); // for deploy
+                    String displayName = userObject.getDisplayName(); // for deploy
+//                    String displayName = userId; // for local
                     history.setChatId(chat.getChatId());
 //                    history.setSenderName(userObject.getDisplayName());
                     history.setSenderName(userId);
@@ -89,13 +90,12 @@ public class WebhookService {
                     // only text
                     history.setType(WebhookMessageType.TEXT.getType());
                     history.setMessage(message);
-                    history.setIsRead(isBotResponse ? 1 : 0); // for deploy
-//                    history.setIsRead(0); // for local
+                    history.setIsRead(isBotResponse ? 1 : 0);
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
                     if (isChatNull) {
-//                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl())); // for deploy
-                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, null)); // for local
+                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl())); // for deploy
+//                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, null)); // for local
                     } else {
                         this.sendMessageToWebApp(chat, history, displayName);
                     }
@@ -115,9 +115,9 @@ public class WebhookService {
                     isBotResponse = Tools.convertIntToBoolean(chat.getIsBotResponse());
                     // chat history detail
                     ChatHistory history = new ChatHistory();
-//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
-//                    String displayName = userObject.getDisplayName(); // for deploy
-                    String displayName = userId; // for local
+                    UserProfileResponse userObject = this.externalService.getUserProfile(userId); // for deploy
+                    String displayName = userObject.getDisplayName(); // for deploy
+//                    String displayName = userId; // for local
                     history.setChatId(chat.getChatId());
 //                    history.setSenderName(userObject.getDisplayName());
                     history.setSenderName(userId);
@@ -125,17 +125,16 @@ public class WebhookService {
                     // only text
                     history.setType(WebhookMessageType.STICKER.getType());
                     history.setMessage(event.getMessage().getPackageId() + "," + event.getMessage().getStickerId());
-                    history.setIsRead(isBotResponse ? 1 : 0); // for deploy
-//                    history.setIsRead(0); // for local
+                    history.setIsRead(isBotResponse ? 1 : 0);
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
                     if (isChatNull) {
-//                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl())); // for deploy
-                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, null)); // for local
+                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl())); // for deploy
+//                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, null)); // for local
                     } else {
                         this.sendMessageToWebApp(chat, history, displayName);
                     }
-                    
+
                 } else if (event.getMessage().getType().equals(WebhookMessageType.IMAGE.getType())) {
                     WebhookMessage message = event.getMessage();
                     // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
@@ -153,9 +152,9 @@ public class WebhookService {
                     isBotResponse = Tools.convertIntToBoolean(chat.getIsBotResponse());
                     // chat history detail
                     ChatHistory history = new ChatHistory();
-//                    UserProfileResponse userObject = this.externalService.getUserProfile(userId);
-//                    String displayName = userObject.getDisplayName(); // for deploy
-                    String displayName = userId; // for local
+                    UserProfileResponse userObject = this.externalService.getUserProfile(userId); // for deploy
+                    String displayName = userObject.getDisplayName(); // for deploy
+//                    String displayName = userId; // for local
                     history.setChatId(chat.getChatId());
 //                    history.setSenderName(userObject.getDisplayName());
                     history.setSenderName(userId);
@@ -165,13 +164,12 @@ public class WebhookService {
                     history.setMessage("image");
                     history.setPreviewImageUrl(message.getPreviewImageUrl());
                     history.setOriginalContentUrl(message.getOriginalContentUrl());
-                    history.setIsRead(isBotResponse ? 1 : 0); // for deploy
-//                    history.setIsRead(0); // for local
+                    history.setIsRead(isBotResponse ? 1 : 0);
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
                     if (isChatNull) {
-//                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl())); // for deploy
-                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, null)); // for local
+                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl())); // for deploy
+//                        this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, null)); // for local
                     } else {
                         this.sendMessageToWebApp(chat, history, displayName);
                     }

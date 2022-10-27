@@ -10,6 +10,7 @@ import INT365.webappchatbot.Models.req.SendingMessageRequest;
 import INT365.webappchatbot.Models.resp.ChatHistoryObject;
 import INT365.webappchatbot.Models.resp.ChatHistoryResponse;
 import INT365.webappchatbot.Models.resp.ChatObject;
+import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -87,11 +88,11 @@ public class ChatService {
             webhookMessageList.add(webhookMessage);
             request.setTo(chat.getName2());
             request.setMessages(webhookMessageList);
-//            this.externalService.pushMessage(request); // for deploy
+            this.externalService.pushMessage(request); // for deploy
             message.setChatId(chat.getChatId());
-//            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : this.externalService.getUserProfile(chat.getName2()).getDisplayName());
+            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : this.externalService.getUserProfile(chat.getName2()).getDisplayName());
             // ^ for deploy
-            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : chat.getName2());
+//            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : chat.getName2());
             // ^ for local
             return message;
         }
@@ -114,14 +115,14 @@ public class ChatService {
         List<ChatObject> responseList = new ArrayList<>();
         for (Chat chat : this.chatRepository.findAll()) {
             ChatObject chatObject = new ChatObject();
-//            UserProfileResponse userProfile = this.externalService.getUserProfile(chat.getName2()); // for deploy
-//            String displayName = userProfile.getDisplayName(); // for deploy
-            String displayName = chat.getName2();
+            UserProfileResponse userProfile = this.externalService.getUserProfile(chat.getName2()); // for deploy
+            String displayName = userProfile.getDisplayName(); // for deploy
+//            String displayName = chat.getName2(); // for local
             chatObject.setChatId(chat.getChatId());
             chatObject.setUserId(chat.getName2());
             chatObject.setDisplayName(displayName);
-//            chatObject.setImageUrl(userProfile.getPictureUrl()); // for deploy
-            chatObject.setImageUrl("url"); // for local
+            chatObject.setImageUrl(userProfile.getPictureUrl()); // for deploy
+//            chatObject.setImageUrl("url"); // for local
             List<ChatHistoryObject> chatHistoryList = new ArrayList<>();
             for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {
                 ChatHistoryObject chatHistoryObject = new ChatHistoryObject();
