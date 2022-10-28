@@ -6,6 +6,7 @@ import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
 import INT365.webappchatbot.Feigns.ExternalService;
 import INT365.webappchatbot.Models.Message;
+import INT365.webappchatbot.Models.Webhook.WebhookEmoji;
 import INT365.webappchatbot.Models.Webhook.WebhookEvent;
 import INT365.webappchatbot.Models.Webhook.WebhookMessage;
 import INT365.webappchatbot.Models.Webhook.WebhookObject;
@@ -38,7 +39,7 @@ public class WebhookService {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
     private final String botTurnOnMessage = "เปิดการใช้งานระบบตอบอัตโนมัติ";
-        private final String botTurnOffMessage = "ปิดการใช้งานระบบตอบอัตโนมัติ"; // for deploy
+    private final String botTurnOffMessage = "ปิดการใช้งานระบบตอบอัตโนมัติ"; // for deploy
 //    private final String botTurnOffMessage = "ปิด"; // for deploy
 
 
@@ -90,6 +91,21 @@ public class WebhookService {
                     // only text
                     history.setType(WebhookMessageType.TEXT.getType());
                     history.setMessage(message);
+                    // check emoji
+                    List<WebhookEmoji> emojis = event.getMessage().getEmojis();
+                    if (!emojis.isEmpty()) {
+                        String first = "<img src='/emoji/";
+                        StringBuilder stringBuilder = new StringBuilder();
+                        boolean hasEmojiStart = false;
+                        for (WebhookEmoji emoji : emojis) {
+                            if (emoji.getIndex() == 0) hasEmojiStart = true;
+                            if (!hasEmojiStart) {
+                                stringBuilder.append(message.substring(0, emoji.getIndex()));
+                            }
+                            stringBuilder.append(first);
+                            stringBuilder.append(emoji.getProductId()).append("/").append(emoji.getEmojiId()).append(".jpg' alt='emoji'/>");
+                        }
+                    }
                     history.setIsRead(isBotResponse ? 1 : 0);
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
@@ -161,7 +177,7 @@ public class WebhookService {
                     history.setReceiverName("admin");
                     // only text
                     history.setType(WebhookMessageType.IMAGE.getType());
-                    history.setMessage("image");
+                    history.setMessage(event.getMessage().getId());
                     history.setPreviewImageUrl(message.getPreviewImageUrl());
                     history.setOriginalContentUrl(message.getOriginalContentUrl());
                     history.setIsRead(isBotResponse ? 1 : 0);
