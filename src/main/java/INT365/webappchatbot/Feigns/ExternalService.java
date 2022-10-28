@@ -5,6 +5,7 @@ import INT365.webappchatbot.Models.Webhook.WebhookMessage;
 import INT365.webappchatbot.Models.Webhook.WebhookObject;
 import INT365.webappchatbot.Models.req.SendingMessageRequest;
 import INT365.webappchatbot.Models.resp.UserProfileResponse;
+import javassist.bytecode.ByteArray;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,6 +24,7 @@ public class ExternalService {
     private final String channelId = "1657101758";
     private final String channelSecret = "08ff6b71e9ae45dae62f27b762d8df65";
     private final String getProfileURI = "https://api.line.me/v2/bot/profile"; // "/{userId}"
+    private final String getImage = "https://api-data.line.me/v2/bot/message/";
     private final RestTemplate restTemplate = new RestTemplate();
 
     public UserProfileResponse getUserProfile(String userId) {
@@ -52,6 +54,13 @@ public class ExternalService {
         HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(messageRequest, httpHeaders);
         this.restTemplate.postForObject(this.linePushMessagingApi, entity, Object.class);
     }
+
+//    public byte[] getImage(String text) {
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
+//        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
+//        return this.restTemplate.getForObject(this.getImage + text + "/content", , httpHeaders);
+//    }
 
     private Object nothingJustKeepingCode(WebhookObject request) {
         // verify webhook

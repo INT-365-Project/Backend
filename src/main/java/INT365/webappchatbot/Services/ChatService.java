@@ -84,7 +84,11 @@ public class ChatService {
             List<WebhookMessage> webhookMessageList = new ArrayList<>();
             WebhookMessage webhookMessage = new WebhookMessage();
             webhookMessage.setText(message.getMessage());
-            webhookMessage.setType("text");
+            webhookMessage.setType(chatHistory.getType());
+            webhookMessage.setOriginalContentUrl(chatHistory.getOriginalContentUrl());
+            webhookMessage.setPreviewImageUrl(chatHistory.getPreviewImageUrl());
+            webhookMessage.setPackageId(chatHistory.getType().equals(WebhookMessageType.STICKER.getType()) ? chatHistory.getMessage().split(",")[0] : null);
+            webhookMessage.setStickerId(chatHistory.getType().equals(WebhookMessageType.STICKER.getType()) ? chatHistory.getMessage().split(",")[1] : null);
             webhookMessageList.add(webhookMessage);
             request.setTo(chat.getName2());
             request.setMessages(webhookMessageList);

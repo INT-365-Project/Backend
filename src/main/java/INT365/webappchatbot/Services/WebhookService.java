@@ -177,7 +177,7 @@ public class WebhookService {
                     history.setReceiverName("admin");
                     // only text
                     history.setType(WebhookMessageType.IMAGE.getType());
-                    history.setMessage(event.getMessage().getId());
+                    history.setMessage("image");
                     history.setPreviewImageUrl(message.getPreviewImageUrl());
                     history.setOriginalContentUrl(message.getOriginalContentUrl());
                     history.setIsRead(isBotResponse ? 1 : 0);
