@@ -93,7 +93,7 @@ public class WebhookService {
                     history.setMessage(message);
                     // check emoji
                     List<WebhookEmoji> emojis = event.getMessage().getEmojis();
-                    if (!emojis.isEmpty()) {
+                    if (emojis != null && !emojis.isEmpty()) {
                         String first = "<img src='/emoji/";
                         StringBuilder stringBuilder = new StringBuilder();
                         boolean hasEmojiStart = false;
