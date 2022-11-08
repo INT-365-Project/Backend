@@ -196,7 +196,7 @@ public class WebhookService {
                     history.setMessage(fileService.uploadFile(randomNumber, image.getResource(), randomNumber + ".jpeg").get("filePath"));
                     String url = imagePath + history.getChatId() + "/" + history.getHistoryId();
                     history.setOriginalContentUrl(image.getResource() != null ? url : null); // for deploy
-                    history.setPreviewImageUrl(image.getUrl() != null ? url : null); // for deploy
+                    history.setPreviewImageUrl(image.getResource() != null ? url : null); // for deploy
                     this.chatHistoryRepository.saveAndFlush(history);
                     if (isChatNull) {
                         this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl())); // for deploy
