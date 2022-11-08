@@ -146,6 +146,7 @@ public class WebhookService {
                     history.setReceiverName("admin");
                     // only text
                     history.setType(WebhookMessageType.STICKER.getType());
+                    history.setPreviewImageUrl(event.getMessage().getId());
                     history.setMessage(event.getMessage().getPackageId() + "," + event.getMessage().getStickerId());
                     history.setIsRead(isBotResponse ? 1 : 0);
                     history.setSentDate(event.getTimestamp());
