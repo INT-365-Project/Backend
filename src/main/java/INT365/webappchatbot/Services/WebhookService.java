@@ -99,14 +99,20 @@ public class WebhookService {
                     history.setMessage(message);
                     // check emoji
                     List<WebhookEmoji> emojis = event.getMessage().getEmojis();
+                    StringBuilder stringBuilder = new StringBuilder();
                     if (emojis != null && !emojis.isEmpty()) {
                         String first = "<img src='/emoji/";
-                        StringBuilder stringBuilder = new StringBuilder();
+                        boolean hasEmojiStart = false;
                         for (WebhookEmoji emoji : emojis) {
+                            if (emoji.getIndex() == 0) hasEmojiStart = true;
+                            if (!hasEmojiStart) {
+                                stringBuilder.append(message.substring(0, emoji.getIndex()));
+                            }
                             stringBuilder.append(first);
                             stringBuilder.append(emoji.getProductId()).append("/").append(emoji.getEmojiId()).append(".jpg' alt='emoji'/>");
                         }
                     }
+                    history.setMessage(stringBuilder.toString());
                     history.setIsRead(isBotResponse ? 1 : 0);
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
