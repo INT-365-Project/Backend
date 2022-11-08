@@ -59,8 +59,9 @@ public class ExternalService {
         HttpHeaders httpHeaders = new HttpHeaders();
 //        httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
         httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
+        HttpEntity<byte[]> entity = new HttpEntity<>(null, httpHeaders);
 //        byte[] resource = this.restTemplate.getForObject(this.getImage + text + "/content", byte[].class, httpHeaders);
-        byte[] resource = this.restTemplate.exchange(this.getImage + text + "/content", HttpMethod.GET, null, byte[].class, httpHeaders);
+        byte[] resource = this.restTemplate.exchange(this.getImage + text + "/content", HttpMethod.GET, entity, byte[].class).getBody();
         return new Image(this.getImage + text + "/content", resource);
     }
 
