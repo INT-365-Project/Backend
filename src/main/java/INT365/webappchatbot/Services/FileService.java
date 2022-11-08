@@ -45,6 +45,22 @@ public class FileService {
         return map;
     }
 
+    public Map<String, String> uploadFile(String fileName, byte[] source, String originalFileName) {
+        Map<String, String> map = new HashMap<>();
+        try {
+            String filePath = new File(".").getCanonicalPath() + this.chatPath + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
+            Path path = Paths.get(filePath);
+            Files.createDirectories(path.getParent());
+            Files.createFile(path);
+            FileOutputStream outputStream = new FileOutputStream(filePath);
+            outputStream.write(source);
+            map.put("filePath", filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
     public String getBase64(String filePath) {
         String base64 = null;
         try {

@@ -5,6 +5,7 @@ import INT365.webappchatbot.Constants.WebhookMessageType;
 import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
 import INT365.webappchatbot.Feigns.ExternalService;
+import INT365.webappchatbot.Models.Image;
 import INT365.webappchatbot.Models.Message;
 import INT365.webappchatbot.Models.Webhook.WebhookEmoji;
 import INT365.webappchatbot.Models.Webhook.WebhookEvent;
@@ -16,6 +17,7 @@ import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,10 @@ public class WebhookService {
     private BotService botService;
     @Autowired
     private ChatService chatService;
+    @Autowired
+    private FileService fileService;
+    @Value("${http.image.path}")
+    private String imagePath;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
     private final String botTurnOnMessage = "เปิดการใช้งานระบบตอบอัตโนมัติ";
@@ -177,11 +183,20 @@ public class WebhookService {
                     history.setReceiverName("admin");
                     // only text
                     history.setType(WebhookMessageType.IMAGE.getType());
-                    history.setMessage("image");
-                    history.setPreviewImageUrl(message.getPreviewImageUrl());
-                    history.setOriginalContentUrl(message.getOriginalContentUrl());
+//                    history.setMessage("image");
+                    history.setMessage(event.getMessage().getId());
+//                    history.setOriginalContentUrl(message.getOriginalContentUrl()); // for local
+//                    history.setPreviewImageUrl(message.getPreviewImageUrl()); // for local
                     history.setIsRead(isBotResponse ? 1 : 0);
                     history.setSentDate(event.getTimestamp());
+                    history = this.chatHistoryRepository.saveAndFlush(history);
+                    // set image
+                    Image image = externalService.getImageById(event.getMessage().getId());  // for deploy
+                    String randomNumber = Tools.randomFileNameNumber();
+                    history.setMessage(fileService.uploadFile(randomNumber, image.getResource(), randomNumber + ".jpeg").get("filePath"));
+                    String url = imagePath + history.getChatId() + "/" + history.getHistoryId();
+                    history.setOriginalContentUrl(image.getResource() != null ? url : null); // for deploy
+                    history.setPreviewImageUrl(image.getUrl() != null ? url : null); // for deploy
                     this.chatHistoryRepository.saveAndFlush(history);
                     if (isChatNull) {
                         this.sendNewHistoryChatToWebApp(this.chatService.getOneChatHistory(chat.getChatId(), displayName, userObject.getPictureUrl())); // for deploy

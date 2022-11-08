@@ -1,11 +1,11 @@
 package INT365.webappchatbot.Feigns;
 
+import INT365.webappchatbot.Models.Image;
 import INT365.webappchatbot.Models.Webhook.WebhookEvent;
 import INT365.webappchatbot.Models.Webhook.WebhookMessage;
 import INT365.webappchatbot.Models.Webhook.WebhookObject;
 import INT365.webappchatbot.Models.req.SendingMessageRequest;
 import INT365.webappchatbot.Models.resp.UserProfileResponse;
-import javassist.bytecode.ByteArray;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -55,12 +55,12 @@ public class ExternalService {
         this.restTemplate.postForObject(this.linePushMessagingApi, entity, Object.class);
     }
 
-//    public byte[] getImage(String text) {
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
-//        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
-//        return this.restTemplate.getForObject(this.getImage + text + "/content", , httpHeaders);
-//    }
+    public Image getImageById(String text) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
+        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
+        return new Image(this.getImage + text + "/content", this.restTemplate.getForObject(this.getImage + text + "/content", byte[].class, httpHeaders));
+    }
 
     private Object nothingJustKeepingCode(WebhookObject request) {
         // verify webhook

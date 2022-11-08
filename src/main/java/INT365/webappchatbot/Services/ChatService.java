@@ -62,7 +62,7 @@ public class ChatService {
             if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
                 String base64 = message.getMessage();
                 String imageExtension = base64.substring(base64.indexOf("/") + 1, base64.indexOf(";", 0));
-                String randomNumber = this.randomNumber();
+                String randomNumber = Tools.randomFileNameNumber();
                 String filePath = this.fileService.uploadFile(randomNumber, message.getMessage().split(",", 0)[1], randomNumber + "." + imageExtension, "chat").get("filePath");
                 chatHistory.setMessage(filePath);
                 message.setMessage(filePath);
@@ -179,18 +179,5 @@ public class ChatService {
             chatHistory.setIsRead(1);
             this.chatHistoryRepository.saveAndFlush(chatHistory);
         }
-    }
-
-    private String randomNumber() {
-        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder stringBuilder = new StringBuilder();
-        int max = alphabet.length() - 1;
-        int min = 0;
-        int range = max - min + 1;
-        for (int i = 0; i < 8; i++) {
-            int randomNumber = (int) (Math.random() * range) + min;
-            stringBuilder.append(alphabet.charAt(randomNumber));
-        }
-        return stringBuilder.toString();
     }
 }
