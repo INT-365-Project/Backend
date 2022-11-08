@@ -57,9 +57,10 @@ public class ExternalService {
 
     public Image getImageById(String text) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
+//        httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
         httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
-        return new Image(this.getImage + text + "/content", this.restTemplate.getForObject(this.getImage + text + "/content", byte[].class, httpHeaders));
+        byte[] resource = this.restTemplate.getForObject(this.getImage + text + "/content", byte[].class, httpHeaders);
+        return new Image(this.getImage + text + "/content", resource);
     }
 
     private Object nothingJustKeepingCode(WebhookObject request) {
