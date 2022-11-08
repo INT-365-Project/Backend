@@ -102,12 +102,7 @@ public class WebhookService {
                     if (emojis != null && !emojis.isEmpty()) {
                         String first = "<img src='/emoji/";
                         StringBuilder stringBuilder = new StringBuilder();
-                        boolean hasEmojiStart = false;
                         for (WebhookEmoji emoji : emojis) {
-                            if (emoji.getIndex() == 0) hasEmojiStart = true;
-                            if (!hasEmojiStart) {
-                                stringBuilder.append(message.substring(0, emoji.getIndex()));
-                            }
                             stringBuilder.append(first);
                             stringBuilder.append(emoji.getProductId()).append("/").append(emoji.getEmojiId()).append(".jpg' alt='emoji'/>");
                         }
@@ -146,7 +141,6 @@ public class WebhookService {
                     history.setReceiverName("admin");
                     // only text
                     history.setType(WebhookMessageType.STICKER.getType());
-                    history.setPreviewImageUrl(event.getMessage().getId());
                     history.setMessage(event.getMessage().getPackageId() + "," + event.getMessage().getStickerId());
                     history.setIsRead(isBotResponse ? 1 : 0);
                     history.setSentDate(event.getTimestamp());
