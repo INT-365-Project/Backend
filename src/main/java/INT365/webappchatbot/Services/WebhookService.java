@@ -236,7 +236,7 @@ public class WebhookService {
             contexts.add(new EmojiClass(tempText, emoji.getProductId(), emoji.getEmojiId()));
         }
         for (EmojiClass context : contexts) {
-            message = message.replace(context.getContext(), "<img src='/emoji/" + context.getEmojiId() + "/" + context.getProductId() + ".jpg' alt='emoji'/>");
+            message = message.replace(context.getContext(), "<img src='/emoji/" + context.getProductId() + "/" + context.getEmojiId() + ".jpg' alt='emoji'/>");
         }
         return message;
     }
