@@ -229,10 +229,10 @@ public class WebhookService {
         List<EmojiClass> contexts = new ArrayList<>();
         // loop get all emoji context
         for (WebhookEmoji emoji : emojis) {
-            String tempText = message.substring(emoji.getIndex(), emoji.getIndex() + emoji.getLength());
-            if ((emoji.getIndex() + emoji.getLength() + 1) <= message.length()) {
-                tempText = message.substring(emoji.getIndex(), emoji.getIndex() + emoji.getLength() + 1);
-            }
+            String tempText = message.substring(emoji.getIndex(), emoji.getIndex() + emoji.getLength() + 1);
+//            if ((emoji.getIndex() + emoji.getLength() + 1) <= message.length()) {
+//                tempText = message.substring(emoji.getIndex(), emoji.getIndex() + emoji.getLength() + 1);
+//            }
             if (contexts.contains(tempText)) {
                 continue;
             }
