@@ -22,6 +22,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -99,20 +100,10 @@ public class WebhookService {
                     history.setMessage(message);
                     // check emoji
                     List<WebhookEmoji> emojis = event.getMessage().getEmojis();
-                    StringBuilder stringBuilder = new StringBuilder();
                     if (emojis != null && !emojis.isEmpty()) {
-                        String first = "<img src='/emoji/";
-                        boolean hasEmojiStart = false;
-                        for (WebhookEmoji emoji : emojis) {
-                            if (emoji.getIndex() == 0) hasEmojiStart = true;
-                            if (!hasEmojiStart) {
-                                stringBuilder.append(message.substring(0, emoji.getIndex()));
-                            }
-                            stringBuilder.append(first);
-                            stringBuilder.append(emoji.getProductId()).append("/").append(emoji.getEmojiId()).append(".jpg' alt='emoji'/>");
-                        }
+                        message = this.convertRawMessageToEmojiFormMessage(message, emojis);
                     }
-                    history.setMessage(stringBuilder.toString());
+                    history.setMessage(message);
                     history.setIsRead(isBotResponse ? 1 : 0);
                     history.setSentDate(event.getTimestamp());
                     this.chatHistoryRepository.saveAndFlush(history);
@@ -209,6 +200,45 @@ public class WebhookService {
             }
         }
         return isBotResponse;
+    }
+
+    private String convertRawMessageToEmojiFormMessage(String message, List<WebhookEmoji> emojis) {
+        class EmojiClass {
+            private String context;
+            private String productId;
+            private String emojiId;
+
+            public EmojiClass(String context, String productId, String emojiId) {
+                this.context = context;
+                this.productId = productId;
+                this.emojiId = emojiId;
+            }
+
+            public String getContext() {
+                return context;
+            }
+
+            public String getProductId() {
+                return productId;
+            }
+
+            public String getEmojiId() {
+                return emojiId;
+            }
+        }
+        List<EmojiClass> contexts = new ArrayList<>();
+        // loop get all emoji context
+        for (WebhookEmoji emoji : emojis) {
+            String tempText = message.substring(emoji.getIndex(), emoji.getIndex() + emoji.getLength() + 1);
+            if (contexts.contains(tempText)) {
+                continue;
+            }
+            contexts.add(new EmojiClass(tempText, emoji.getProductId(), emoji.getEmojiId()));
+        }
+        for (EmojiClass context : contexts) {
+            message = message.replace(context.getContext(), "<img src='/emoji/" + context.getEmojiId() + "/" + context.getProductId() + ".jpg' alt='emoji'/>");
+        }
+        return message;
     }
 
     private void sendNewHistoryChatToWebApp(ChatObject chatHistory) {
