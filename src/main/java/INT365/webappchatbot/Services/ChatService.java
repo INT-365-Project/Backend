@@ -79,7 +79,7 @@ public class ChatService {
                         // create webhook emoji
                         WebhookEmoji emoji = new WebhookEmoji();
                         // emoji id got 3 characters
-                        emoji.setEmojiId(substring.substring(temp.indexOf(".jpg") - 3, temp.indexOf(".jpg")));
+                        emoji.setEmojiId(substring.substring(substring.indexOf(".jpg") - 3, substring.indexOf(".jpg")));
                         // product id got 24 characters
                         emoji.setProductId(temp.substring(0, 24));
                         emoji.setIndex(text.indexOf(firstContext, index));
