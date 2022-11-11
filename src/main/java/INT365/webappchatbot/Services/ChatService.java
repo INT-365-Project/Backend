@@ -69,12 +69,11 @@ public class ChatService {
             List<WebhookEmoji> emojis = new ArrayList<>();
             String text = message.getMessage();
             String tempText = message.getMessage();
-            System.out.println(text);
             int index = text.indexOf(firstContext);
+            int tempIndex = text.indexOf(firstContext);
             if (index != -1) {
                 do {
                     String substring = text.substring(message.getMessage().indexOf(firstContext, index), text.indexOf(lastContext, index) + lastContext.length());
-                    System.out.println(substring);
                     // concat specific part to create webhook emoji object
                     String temp = Arrays.stream(substring.split(firstContext + "/emoji/")).filter((msg) -> !msg.equals("")).collect(Collectors.toList()).get(0);
                     // create webhook emoji
@@ -83,12 +82,13 @@ public class ChatService {
                     emoji.setEmojiId(temp.substring(temp.indexOf(".jpg") - 3, temp.indexOf(".jpg")));
                     // product id got 24 characters
                     emoji.setProductId(temp.substring(0, 24));
-                    emoji.setIndex(text.indexOf(firstContext, index));
                     String placeHolder = "$";
                     tempText = tempText.replaceFirst(substring, Matcher.quoteReplacement(placeHolder));
+                    emoji.setIndex(tempText.indexOf(placeHolder, tempIndex));
                     emoji.setLength(1);
                     emojis.add(emoji);
                     index = text.indexOf(firstContext, index + 1) == -1 ? -1 : text.indexOf(firstContext, index + 1);
+                    tempIndex = tempText.indexOf(firstContext, tempIndex + 1) == -1 ? -1 : tempText.indexOf(firstContext, index + 1);
                 } while (index != -1);
             }
             if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
