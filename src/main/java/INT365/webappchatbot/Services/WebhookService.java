@@ -4,6 +4,7 @@ import INT365.webappchatbot.Constants.Status;
 import INT365.webappchatbot.Constants.WebhookMessageType;
 import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
+import INT365.webappchatbot.Entities.Emoji;
 import INT365.webappchatbot.Feigns.ExternalService;
 import INT365.webappchatbot.Models.Image;
 import INT365.webappchatbot.Models.Message;
@@ -16,6 +17,7 @@ import INT365.webappchatbot.Models.resp.ChatObject;
 import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
+import INT365.webappchatbot.Repositories.EmojiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -33,6 +35,8 @@ public class WebhookService {
     private ChatRepository chatRepository;
     @Autowired
     private ChatHistoryRepository chatHistoryRepository;
+    @Autowired
+    private EmojiRepository emojiRepository;
     @Autowired
     private ExternalService externalService;
     @Autowired
@@ -231,6 +235,14 @@ public class WebhookService {
             String tempText = message.substring(emoji.getIndex(), emoji.getIndex() + emoji.getLength());
             if (contexts.contains(tempText)) {
                 continue;
+            }
+            Emoji tempEmoji = emojiRepository.getEmojiByProductIdAndEmojiId(emoji.getProductId(), emoji.getEmojiId());
+            if (tempEmoji == null) {
+                tempEmoji = new Emoji();
+                tempEmoji.setEmojiId(emoji.getEmojiId());
+                tempEmoji.setProductId(emoji.getProductId());
+                tempEmoji.setContext(tempText);
+                this.emojiRepository.saveAndFlush(tempEmoji);
             }
             contexts.add(new EmojiClass(tempText, emoji.getProductId(), emoji.getEmojiId()));
         }

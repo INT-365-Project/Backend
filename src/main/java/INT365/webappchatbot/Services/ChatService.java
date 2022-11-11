@@ -3,6 +3,7 @@ package INT365.webappchatbot.Services;
 import INT365.webappchatbot.Constants.WebhookMessageType;
 import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
+import INT365.webappchatbot.Entities.Emoji;
 import INT365.webappchatbot.Feigns.ExternalService;
 import INT365.webappchatbot.Models.Message;
 import INT365.webappchatbot.Models.Webhook.WebhookEmoji;
@@ -14,6 +15,7 @@ import INT365.webappchatbot.Models.resp.ChatObject;
 import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
+import INT365.webappchatbot.Repositories.EmojiRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,8 @@ public class ChatService {
     private ChatRepository chatRepository;
     @Autowired
     private ChatHistoryRepository chatHistoryRepository;
+    @Autowired
+    private EmojiRepository emojiRepository;
     @Autowired
     private FileService fileService;
     @Autowired
@@ -76,11 +80,15 @@ public class ChatService {
                         }
                         WebhookEmoji emoji = new WebhookEmoji();
                         // emoji id got 3 characters
-                        emoji.setProductId(temp.substring(temp.indexOf(".jpg") - 3, temp.indexOf(".jpg")));
+                        String emojiId = temp.substring(temp.indexOf(".jpg") - 3, temp.indexOf(".jpg"));
+                        emoji.setEmojiId(emojiId);
                         // product id got 24 characters
-                        emoji.setEmojiId(temp.substring(0, 24));
+                        String productId = temp.substring(0, 24);
+                        emoji.setProductId(productId);
                         emoji.setIndex(text.indexOf(firstContext, index));
-                        emoji.setLength(64);
+                        Emoji findEmoji = emojiRepository.getEmojiByProductIdAndEmojiId(productId, emojiId) == null ? null : emojiRepository.getEmojiByProductIdAndEmojiId(productId, emojiId);
+                        text = findEmoji == null ? text.replace(substring, "(unknown)") : text.replace(substring, findEmoji.getContext());
+                        emoji.setLength(findEmoji == null ? 9 : findEmoji.getContext().length());
                         emojis.add(emoji);
                     }
                     index = text.indexOf(firstContext, index + 1) == -1 ? -1 : text.indexOf(firstContext, index + 1);
