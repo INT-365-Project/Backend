@@ -87,8 +87,9 @@ public class ChatService {
                         emoji.setProductId(productId);
                         emoji.setIndex(text.indexOf(firstContext, index));
                         Emoji findEmoji = emojiRepository.getEmojiByProductIdAndEmojiId(productId, emojiId) == null ? null : emojiRepository.getEmojiByProductIdAndEmojiId(productId, emojiId);
-                        text = findEmoji == null ? text.replace(substring, "(unknown)") : text.replace(substring, findEmoji.getContext());
-                        emoji.setLength(findEmoji == null ? 9 : findEmoji.getContext().length());
+                        String placeHolder = findEmoji == null ? "(unknown)" : "$" + findEmoji.getProductId() + findEmoji.getProductId() + "$";
+                        text = findEmoji == null ? text.replace(substring, "(unknown)") : text.replace(substring, placeHolder);
+                        emoji.setLength(findEmoji == null ? 9 : placeHolder.length());
                         emojis.add(emoji);
                     }
                     index = text.indexOf(firstContext, index + 1) == -1 ? -1 : text.indexOf(firstContext, index + 1);
