@@ -66,17 +66,14 @@ public class ChatService {
             List<WebhookEmoji> emojis = new ArrayList<>();
             String text = message.getMessage();
             int index = text.indexOf(firstContext);
-            if (index == -1) {
+            if (index != -1) {
                 do {
-                    // 3 + 48 + 19
-
                     String substring = text.substring(message.getMessage().indexOf(firstContext, index), text.indexOf(lastContext, index) + lastContext.length());
                     // concat specific part to create webhook emoji object
                     for (String temp : substring.split(firstContext + "/emoji/")) {
                         if (temp.equals("")) {
                             continue;
                         }
-
                         WebhookEmoji emoji = new WebhookEmoji();
                         // emoji id got 3 characters
                         emoji.setEmojiId(temp.substring(temp.indexOf(".jpg") - 3, temp.indexOf(".jpg")));
