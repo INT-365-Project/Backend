@@ -66,6 +66,7 @@ public class ChatService {
             chatHistory.setMessage(message.getMessage());
             List<WebhookEmoji> emojis = new ArrayList<>();
             String text = message.getMessage();
+            System.out.println(text);
             int index = text.indexOf(firstContext);
             if (index != -1) {
                 do {
