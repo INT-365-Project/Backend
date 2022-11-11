@@ -5,6 +5,7 @@ import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
 import INT365.webappchatbot.Feigns.ExternalService;
 import INT365.webappchatbot.Models.Message;
+import INT365.webappchatbot.Models.Webhook.WebhookEmoji;
 import INT365.webappchatbot.Models.Webhook.WebhookMessage;
 import INT365.webappchatbot.Models.req.SendingMessageRequest;
 import INT365.webappchatbot.Models.resp.ChatHistoryObject;
@@ -36,6 +37,9 @@ public class ChatService {
     @Value("${http.image.path}")
     private String imagePath;
 
+    private final String firstContext = "<img src='";
+    private final String lastContext = ".jpg' alt='emoji'/>";
+
     @Transactional
     public Message saveChat(Message message) {
         // case private chat >> receiverName != null
@@ -59,6 +63,30 @@ public class ChatService {
             chatHistory.setReceiverName(message.getReceiverName());
             chatHistory.setType(message.getType());
             chatHistory.setMessage(message.getMessage());
+            List<WebhookEmoji> emojis = new ArrayList<>();
+            String text = message.getMessage();
+            int index = text.indexOf(firstContext);
+            do {
+                // 3 + 48 + 19
+
+                String substring = text.substring(message.getMessage().indexOf(firstContext, index), text.indexOf(lastContext, index) + lastContext.length());
+                // concat specific part to create webhook emoji object
+                for (String temp : substring.split(firstContext + "/emoji/")) {
+                    if (temp.equals("")) {
+                        continue;
+                    }
+
+                    WebhookEmoji emoji = new WebhookEmoji();
+                    // emoji id got 3 characters
+                    emoji.setEmojiId(temp.substring(temp.indexOf(".jpg") - 3, temp.indexOf(".jpg")));
+                    // product id got 24 characters
+                    emoji.setProductId(temp.substring(0, 24));
+                    emoji.setIndex(text.indexOf(firstContext, index));
+                    emoji.setLength(64);
+                    emojis.add(emoji);
+                }
+                index = text.indexOf(firstContext, index + 1) == -1 ? -1 : text.indexOf(firstContext, index + 1);
+            } while (index != -1);
             if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
                 String base64 = message.getMessage();
                 String imageExtension = base64.substring(base64.indexOf("/") + 1, base64.indexOf(";", 0));
@@ -84,6 +112,7 @@ public class ChatService {
             List<WebhookMessage> webhookMessageList = new ArrayList<>();
             WebhookMessage webhookMessage = new WebhookMessage();
             webhookMessage.setText(message.getMessage());
+            webhookMessage.setEmojis(emojis.size() > 0 ? emojis : null);
             webhookMessage.setType(chatHistory.getType());
             webhookMessage.setOriginalContentUrl(chatHistory.getOriginalContentUrl());
             webhookMessage.setPreviewImageUrl(chatHistory.getPreviewImageUrl());

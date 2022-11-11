@@ -47,8 +47,7 @@ public class WebhookService {
     private SimpMessagingTemplate simpMessagingTemplate;
     private final String botTurnOnMessage = "เปิดการใช้งานระบบตอบอัตโนมัติ";
     private final String botTurnOffMessage = "ปิดการใช้งานระบบตอบอัตโนมัติ"; // for deploy
-//    private final String botTurnOffMessage = "ปิด"; // for deploy
-
+    //    private final String botTurnOffMessage = "ปิด"; // for deploy
 
     public Object webhookMessageAPI(WebhookObject request) {
         // save message to chat history that send from user
@@ -230,9 +229,6 @@ public class WebhookService {
         // loop get all emoji context
         for (WebhookEmoji emoji : emojis) {
             String tempText = message.substring(emoji.getIndex(), emoji.getIndex() + emoji.getLength());
-//            if ((emoji.getIndex() + emoji.getLength() + 1) <= message.length()) {
-//                tempText = message.substring(emoji.getIndex(), emoji.getIndex() + emoji.getLength() + 1);
-//            }
             if (contexts.contains(tempText)) {
                 continue;
             }
