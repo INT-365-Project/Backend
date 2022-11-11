@@ -88,7 +88,7 @@ public class ChatService {
                     emoji.setLength(1);
                     emojis.add(emoji);
                     index = text.indexOf(firstContext, index + 1) == -1 ? -1 : text.indexOf(firstContext, index + 1);
-                    tempIndex = tempText.indexOf(firstContext, tempIndex + 1) == -1 ? -1 : tempText.indexOf(firstContext, index + 1);
+                    tempIndex = tempText.indexOf(firstContext, tempIndex + 1) == -1 ? -1 : tempText.indexOf(firstContext, tempIndex + 1);
                 } while (index != -1);
             }
             if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
