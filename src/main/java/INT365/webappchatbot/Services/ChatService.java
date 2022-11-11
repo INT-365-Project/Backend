@@ -118,7 +118,7 @@ public class ChatService {
             SendingMessageRequest request = new SendingMessageRequest();
             List<WebhookMessage> webhookMessageList = new ArrayList<>();
             WebhookMessage webhookMessage = new WebhookMessage();
-            webhookMessage.setText(message.getMessage());
+            webhookMessage.setText(text);
             webhookMessage.setEmojis(emojis.size() > 0 ? emojis : null);
             webhookMessage.setType(chatHistory.getType());
             webhookMessage.setOriginalContentUrl(chatHistory.getOriginalContentUrl());
