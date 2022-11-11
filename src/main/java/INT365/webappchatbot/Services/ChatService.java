@@ -3,7 +3,6 @@ package INT365.webappchatbot.Services;
 import INT365.webappchatbot.Constants.WebhookMessageType;
 import INT365.webappchatbot.Entities.Chat;
 import INT365.webappchatbot.Entities.ChatHistory;
-import INT365.webappchatbot.Entities.Emoji;
 import INT365.webappchatbot.Feigns.ExternalService;
 import INT365.webappchatbot.Models.Message;
 import INT365.webappchatbot.Models.Webhook.WebhookEmoji;
@@ -15,7 +14,6 @@ import INT365.webappchatbot.Models.resp.ChatObject;
 import INT365.webappchatbot.Models.resp.UserProfileResponse;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import INT365.webappchatbot.Repositories.ChatRepository;
-import INT365.webappchatbot.Repositories.EmojiRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +30,6 @@ public class ChatService {
     private ChatRepository chatRepository;
     @Autowired
     private ChatHistoryRepository chatHistoryRepository;
-    @Autowired
-    private EmojiRepository emojiRepository;
     @Autowired
     private FileService fileService;
     @Autowired
@@ -86,10 +82,9 @@ public class ChatService {
                         String productId = temp.substring(0, 24);
                         emoji.setProductId(productId);
                         emoji.setIndex(text.indexOf(firstContext, index));
-                        Emoji findEmoji = emojiRepository.getEmojiByProductIdAndEmojiId(productId, emojiId) == null ? null : emojiRepository.getEmojiByProductIdAndEmojiId(productId, emojiId);
-                        String placeHolder = findEmoji == null ? "(unknown)" : "$";
-                        text = findEmoji == null ? text.replace(substring, "(unknown)") : text.replace(substring, placeHolder);
-                        emoji.setLength(findEmoji == null ? 9 : placeHolder.length());
+                        String placeHolder = "$";
+                        text = text.replaceFirst(substring, placeHolder);
+                        emoji.setLength(placeHolder.length());
                         emojis.add(emoji);
                     }
                     index = text.indexOf(firstContext, index + 1) == -1 ? -1 : text.indexOf(firstContext, index + 1);
