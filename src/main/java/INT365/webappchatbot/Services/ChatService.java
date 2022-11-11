@@ -70,6 +70,7 @@ public class ChatService {
             if (index != -1) {
                 do {
                     String substring = text.substring(message.getMessage().indexOf(firstContext, index), text.indexOf(lastContext, index) + lastContext.length());
+                    System.out.println(substring);
                     // concat specific part to create webhook emoji object
                     for (String temp : substring.split(firstContext + "/emoji/")) {
                         if (temp.equals("")) {
