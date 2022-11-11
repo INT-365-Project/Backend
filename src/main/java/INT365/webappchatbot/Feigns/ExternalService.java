@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -48,11 +49,15 @@ public class ExternalService {
     }
 
     public void pushMessage(SendingMessageRequest messageRequest) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
-        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
-        HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(messageRequest, httpHeaders);
-        this.restTemplate.postForObject(this.linePushMessagingApi, entity, Object.class);
+        try {
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
+            httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
+            HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(messageRequest, httpHeaders);
+            this.restTemplate.postForObject(this.linePushMessagingApi, entity, Object.class);
+        }catch (HttpClientErrorException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public Image getImageById(String text) {
