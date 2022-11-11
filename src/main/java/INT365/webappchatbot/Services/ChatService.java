@@ -23,6 +23,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
 
 @Service
 public class ChatService {
@@ -70,23 +71,19 @@ public class ChatService {
                 do {
                     String substring = text.substring(message.getMessage().indexOf(firstContext, index), text.indexOf(lastContext, index) + lastContext.length());
                     // concat specific part to create webhook emoji object
-                    for (String temp : substring.split(firstContext + "/emoji/")) {
-                        if (temp.equals("")) {
-                            continue;
-                        }
-                        WebhookEmoji emoji = new WebhookEmoji();
-                        // emoji id got 3 characters
-                        String emojiId = temp.substring(temp.indexOf(".jpg") - 3, temp.indexOf(".jpg"));
-                        emoji.setEmojiId(emojiId);
-                        // product id got 24 characters
-                        String productId = temp.substring(0, 24);
-                        emoji.setProductId(productId);
-                        emoji.setIndex(text.indexOf(firstContext, index));
-                        String placeHolder = "$";
-                        text = text.replaceFirst(substring, placeHolder);
-                        emoji.setLength(placeHolder.length());
-                        emojis.add(emoji);
-                    }
+                    String temp = substring.split(firstContext + "/emoji/")[1];
+                    // create webhook emoji
+                    WebhookEmoji emoji = new WebhookEmoji();
+                    // emoji id got 3 characters
+                    emoji.setEmojiId(temp.substring(temp.indexOf(".jpg") - 3, temp.indexOf(".jpg")));
+                    // product id got 24 characters
+                    emoji.setProductId(temp.substring(0, 24));
+                    emoji.setIndex(text.indexOf(firstContext, index));
+                    String placeHolder = "$";
+                    text = text.replaceFirst(substring, Matcher.quoteReplacement(placeHolder));
+                    emoji.setLength(placeHolder.length());
+                    emojis.add(emoji);
+
                     index = text.indexOf(firstContext, index + 1) == -1 ? -1 : text.indexOf(firstContext, index + 1);
                 } while (index != -1);
             }
