@@ -21,9 +21,11 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatService {
@@ -71,7 +73,7 @@ public class ChatService {
                 do {
                     String substring = text.substring(message.getMessage().indexOf(firstContext, index), text.indexOf(lastContext, index) + lastContext.length());
                     // concat specific part to create webhook emoji object
-                    String temp = substring.split(firstContext + "/emoji/")[1];
+                    String temp = Arrays.stream(substring.split(firstContext + "/emoji/")).filter((msg)-> !msg.equals("")).collect(Collectors.toList()).get(0);
                     // create webhook emoji
                     WebhookEmoji emoji = new WebhookEmoji();
                     // emoji id got 3 characters
