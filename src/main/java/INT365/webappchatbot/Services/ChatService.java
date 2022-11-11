@@ -21,9 +21,11 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatService {
@@ -66,6 +68,7 @@ public class ChatService {
             chatHistory.setMessage(message.getMessage());
             List<WebhookEmoji> emojis = new ArrayList<>();
             String text = message.getMessage();
+            String tempText = message.getMessage();
             System.out.println(text);
             int index = text.indexOf(firstContext);
             if (index != -1) {
@@ -73,23 +76,18 @@ public class ChatService {
                     String substring = text.substring(message.getMessage().indexOf(firstContext, index), text.indexOf(lastContext, index) + lastContext.length());
                     System.out.println(substring);
                     // concat specific part to create webhook emoji object
-                    for (String temp : substring.split(firstContext + "/emoji/")) {
-                        if (temp.equals("")) {
-                            continue;
-                        }
-//                        String temp = Arrays.stream(substring.split(firstContext + "/emoji/")).filter((msg) -> !msg.equals("")).collect(Collectors.toList()).get(0);
-                        // create webhook emoji
-                        WebhookEmoji emoji = new WebhookEmoji();
-                        // emoji id got 3 characters
-                        emoji.setEmojiId(substring.substring(substring.indexOf(".jpg") - 3, substring.indexOf(".jpg")));
-                        // product id got 24 characters
-                        emoji.setProductId(temp.substring(0, 24));
-                        emoji.setIndex(text.indexOf(firstContext, index));
-                        String placeHolder = "$";
-                        text = text.replaceFirst(substring, Matcher.quoteReplacement(placeHolder));
-                        emoji.setLength(placeHolder.length());
-                        emojis.add(emoji);
-                    }
+                    String temp = Arrays.stream(substring.split(firstContext + "/emoji/")).filter((msg) -> !msg.equals("")).collect(Collectors.toList()).get(0);
+                    // create webhook emoji
+                    WebhookEmoji emoji = new WebhookEmoji();
+                    // emoji id got 3 characters
+                    emoji.setEmojiId(temp.substring(temp.indexOf(".jpg") - 3, temp.indexOf(".jpg")));
+                    // product id got 24 characters
+                    emoji.setProductId(temp.substring(0, 24));
+                    emoji.setIndex(text.indexOf(firstContext, index));
+                    String placeHolder = "$";
+                    tempText = tempText.replaceFirst(substring, Matcher.quoteReplacement(placeHolder));
+                    emoji.setLength(1);
+                    emojis.add(emoji);
                     index = text.indexOf(firstContext, index + 1) == -1 ? -1 : text.indexOf(firstContext, index + 1);
                 } while (index != -1);
             }
@@ -117,7 +115,7 @@ public class ChatService {
             SendingMessageRequest request = new SendingMessageRequest();
             List<WebhookMessage> webhookMessageList = new ArrayList<>();
             WebhookMessage webhookMessage = new WebhookMessage();
-            webhookMessage.setText(text);
+            webhookMessage.setText(tempText);
             webhookMessage.setEmojis(emojis.size() > 0 ? emojis : null);
             webhookMessage.setType(chatHistory.getType());
             webhookMessage.setOriginalContentUrl(chatHistory.getOriginalContentUrl());
