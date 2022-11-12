@@ -40,8 +40,8 @@ public class ChatService {
     @Value("${http.image.path}")
     private String imagePath;
 
-    private final String firstContext = "<img src='";
-    private final String lastContext = ".jpg' alt='emoji'>";
+    private final String firstContext = "<img src=\"";
+    private final String lastContext = ".jpg\" alt=\"emoji\">";
 
     @Transactional
     public Message saveChat(Message message) {
