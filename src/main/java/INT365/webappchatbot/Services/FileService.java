@@ -92,7 +92,6 @@ public class FileService {
 //        }
 //        return bytes;
         return new InputStreamResource(getClass().getResourceAsStream(chatHistory.getMessage()));
-)
     }
 
     public void deleteFile(String filePath) {
