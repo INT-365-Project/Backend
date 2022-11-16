@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import javax.transaction.Transactional;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -79,15 +80,15 @@ public class FileService {
 
     public Image getImageBytes(Long chatId, Long historyId) {
         ChatHistory chatHistory = chatHistoryRepository.findChatHistoriesEntityByChatId(chatId).stream().filter(history -> Objects.equals(history.getHistoryId(), historyId)).collect(Collectors.toList()).get(0);
-        BufferedImage bytes = null;
-        try {
-//            bytes = FileUtils.readFileToByteArray(new File(chatHistory.getMessage()));  // return byte[]
-//            bytes = new UrlResource(new File(chatHistory.getMessage()).toPath().toUri()); // return Resource
-            bytes = ImageIO.read(getClass().getResource(chatHistory.getMessage()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return bytes;
+//        Image bytes = null;
+//        try {
+////            bytes = FileUtils.readFileToByteArray(new File(chatHistory.getMessage()));  // return byte[]
+////            bytes = new UrlResource(new File(chatHistory.getMessage()).toPath().toUri()); // return Resource
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return bytes;
+        return new ImageIcon(chatHistory.getMessage()).getImage();
     }
 
     public void deleteFile(String filePath) {
