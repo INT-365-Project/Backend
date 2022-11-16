@@ -42,8 +42,7 @@ public class ChatController {
             this.chatService.setMessageRead(message);
         }
         if (message.getStatus().equals(Status.MESSAGE)) {
-            simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", message); // path > /user/{receiverName}/private
-            return this.chatService.saveChat(message);
+            simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", this.chatService.saveChat(message)); // path > /user/{receiverName}/private
         }
         if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
             simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", this.chatService.saveChat(message)); // path > /user/{receiverName}/private
