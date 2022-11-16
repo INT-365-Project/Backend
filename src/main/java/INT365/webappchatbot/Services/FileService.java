@@ -42,7 +42,7 @@ public class FileService {
             Files.createFile(path);
             FileOutputStream outputStream = new FileOutputStream(filePath);
             outputStream.write(decodedBytes);
-            map.put("filePath", filePath);
+            map.put("filePath", (type.equals("news") ? this.profilePath : this.chatPath) + fileName + originalFileName.substring(originalFileName.lastIndexOf(".")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -59,7 +59,7 @@ public class FileService {
             Files.createFile(path);
             FileOutputStream outputStream = new FileOutputStream(filePath);
             outputStream.write(source);
-            map.put("filePath", filePath);
+            map.put("filePath", this.chatPath + fileName + originalFileName.substring(originalFileName.lastIndexOf(".")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,7 +69,7 @@ public class FileService {
     public String getBase64(String filePath) {
         String base64 = null;
         try {
-            byte[] bytes = FileUtils.readFileToByteArray(new File(filePath));
+            byte[] bytes = FileUtils.readFileToByteArray(new File(this.path + filePath));
             byte[] encodedBytes = Base64.getEncoder().encode(bytes);
             base64 = new String(encodedBytes);
         } catch (IOException e) {
@@ -83,7 +83,7 @@ public class FileService {
         ChatHistory chatHistory = chatHistoryRepository.findChatHistoriesEntityByChatId(chatId).stream().filter(history -> Objects.equals(history.getHistoryId(), historyId)).collect(Collectors.toList()).get(0);
         byte[] bytes = null;
         try {
-            bytes = FileUtils.readFileToByteArray(new File(chatHistory.getMessage()));  // return byte[]
+            bytes = FileUtils.readFileToByteArray(new File(this.path + chatHistory.getMessage()));  // return byte[]
 //            bytes = new UrlResource(new File(chatHistory.getMessage()).toPath().toUri()); // return Resource
         } catch (IOException e) {
             e.printStackTrace();
