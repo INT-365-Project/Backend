@@ -35,6 +35,6 @@ public class FileController {
 
     @GetMapping("/viewImage/{chatId}/{historyId}")
     public ResponseEntity<Object> viewImage(@PathVariable("chatId") Long chatId, @PathVariable("historyId") Long historyId) {
-        return ResponseEntity.ok().contentType(MediaType.ALL).body(this.fileService.getImageBytes(chatId, historyId));
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(this.fileService.getImageBytes(chatId, historyId));
     }
 }
