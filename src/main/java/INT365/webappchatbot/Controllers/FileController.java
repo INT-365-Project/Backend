@@ -6,6 +6,8 @@ import INT365.webappchatbot.Models.req.FileRequest;
 import INT365.webappchatbot.Services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
@@ -32,7 +34,7 @@ public class FileController {
     }
 
     @GetMapping("/viewImage/{chatId}/{historyId}")
-    public Object viewImage(@PathVariable("chatId") Long chatId, @PathVariable("historyId") Long historyId) {
-        return this.fileService.getImageBytes(chatId, historyId);
+    public ResponseEntity<Object> viewImage(@PathVariable("chatId") Long chatId, @PathVariable("historyId") Long historyId) {
+        return ResponseEntity.ok().contentType(MediaType.ALL).body(this.fileService.getImageBytes(chatId, historyId));
     }
 }
