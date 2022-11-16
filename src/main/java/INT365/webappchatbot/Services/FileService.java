@@ -5,15 +5,14 @@ import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
-import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
-import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -82,17 +81,18 @@ public class FileService {
     }
 
 
-    public Image getImageBytes(Long chatId, Long historyId) {
+    public InputStreamResource getImageBytes(Long chatId, Long historyId) {
         ChatHistory chatHistory = chatHistoryRepository.findChatHistoriesEntityByChatId(chatId).stream().filter(history -> Objects.equals(history.getHistoryId(), historyId)).collect(Collectors.toList()).get(0);
-        Image bytes = null;
-        try {
-//            bytes = FileUtils.readFileToByteArray(new File(chatHistory.getMessage()));  // return byte[]
-//            bytes = new UrlResource(new File(chatHistory.getMessage()).toPath().toUri()); // return Resource
-            bytes = ImageIO.read(ResourceUtils.getFile(chatHistory.getMessage()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return bytes;
+        InputStream bytes = null;
+//        try {
+////            bytes = FileUtils.readFileToByteArray(new File(chatHistory.getMessage()));  // return byte[]
+////            bytes = new UrlResource(new File(chatHistory.getMessage()).toPath().toUri()); // return Resource
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return bytes;
+        return new InputStreamResource(getClass().getResourceAsStream(chatHistory.getMessage()));
+)
     }
 
     public void deleteFile(String filePath) {
