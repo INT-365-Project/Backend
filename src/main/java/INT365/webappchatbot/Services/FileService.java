@@ -4,6 +4,7 @@ import INT365.webappchatbot.Entities.ChatHistory;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -25,8 +26,10 @@ import java.util.stream.Collectors;
 @Service
 public class FileService {
 
-    private final String profilePath = "/src/main/resources/storage/profile/";
-    private final String chatPath = "/src/main/resources/storage/chat/";
+    @Value("${storage.chat}")
+    private String path;
+    private final String profilePath = "/profile/";
+    private final String chatPath = "/chat/";
     @Autowired
     private ChatHistoryRepository chatHistoryRepository;
 
@@ -34,7 +37,8 @@ public class FileService {
     public Map<String, String> uploadFile(String fileName, String base64, String originalFileName, String type) {
         Map<String, String> map = new HashMap<>();
         try {
-            String filePath = new File(".").getCanonicalPath() + (type.equals("news") ? this.profilePath : this.chatPath) + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
+//            String filePath = new File(".").getCanonicalPath() + (type.equals("news") ? this.profilePath : this.chatPath) + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
+            String filePath = this.path + (type.equals("news") ? this.profilePath : this.chatPath) + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
             byte[] decodedBytes = Base64.getDecoder().decode(base64);
             Path path = Paths.get(filePath);
             Files.createDirectories(path.getParent());
@@ -51,7 +55,8 @@ public class FileService {
     public Map<String, String> uploadFile(String fileName, byte[] source, String originalFileName) {
         Map<String, String> map = new HashMap<>();
         try {
-            String filePath = new File(".").getCanonicalPath() + this.chatPath + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
+//            String filePath = new File(".").getCanonicalPath() + this.chatPath + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
+            String filePath = this.path + this.chatPath + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
             Path path = Paths.get(filePath);
             Files.createDirectories(path.getParent());
             Files.createFile(path);
@@ -83,7 +88,7 @@ public class FileService {
         try {
 //            bytes = FileUtils.readFileToByteArray(new File(chatHistory.getMessage()));  // return byte[]
 //            bytes = new UrlResource(new File(chatHistory.getMessage()).toPath().toUri()); // return Resource
-            bytes = ImageIO.read(ResourceUtils.getFile(new File(".").getCanonicalPath() + chatHistory.getMessage().substring(1,chatHistory.getMessage().length())));
+            bytes = ImageIO.read(ResourceUtils.getFile(this.path + chatHistory.getMessage()));
         } catch (IOException e) {
             e.printStackTrace();
         }
