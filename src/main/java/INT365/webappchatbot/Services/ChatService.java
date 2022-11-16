@@ -20,10 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
@@ -44,7 +41,7 @@ public class ChatService {
     private final String lastContext = ".jpg\" alt=\"emoji\">";
 
     @Transactional
-    public Message saveChat(Message message) {
+    public Map<String, Object> saveChat(Message message) {
         // case private chat >> receiverName != null
         if (StringUtils.isNotEmpty(message.getReceiverName())) {
             // find old chat id
@@ -131,7 +128,10 @@ public class ChatService {
             // ^ for deploy
 //            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : chat.getName2());
             // ^ for local
-            return message;
+            Map<String,Object> map = new HashMap<>();
+            map.put("message",message);
+            map.put("history", this.chatHistoryRepository.findChatHistoriesEntityByChatId(chat.getChatId()));
+            return map;
         }
         // case public chat >> receiverName == null
         else {

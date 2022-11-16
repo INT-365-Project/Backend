@@ -22,9 +22,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class WebhookService {
@@ -313,6 +311,9 @@ public class WebhookService {
         message.setOriginalContentUrl(chatHistory.getOriginalContentUrl());
         message.setPreviewImageUrl(chatHistory.getPreviewImageUrl());
         message.setDisplayName(displayName);
-        simpMessagingTemplate.convertAndSendToUser(chat.getName2(), "/private", message);
+        Map<String,Object> map = new HashMap<>();
+        map.put("message",message);
+        map.put("history", this.chatHistoryRepository.findChatHistoriesEntityByChatId(chat.getChatId()));
+        simpMessagingTemplate.convertAndSendToUser(chat.getName2(), "/private", map);
     }
 }
