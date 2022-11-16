@@ -83,7 +83,7 @@ public class FileService {
         try {
 //            bytes = FileUtils.readFileToByteArray(new File(chatHistory.getMessage()));  // return byte[]
 //            bytes = new UrlResource(new File(chatHistory.getMessage()).toPath().toUri()); // return Resource
-            bytes = ImageIO.read(ResourceUtils.getFile(chatHistory.getMessage()));
+            bytes = ImageIO.read(ResourceUtils.getFile(new File(".").getCanonicalPath() + chatHistory.getMessage()));
         } catch (IOException e) {
             e.printStackTrace();
         }
