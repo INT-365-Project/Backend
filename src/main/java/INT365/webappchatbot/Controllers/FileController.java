@@ -5,6 +5,7 @@ import INT365.webappchatbot.Models.ResponseModel;
 import INT365.webappchatbot.Models.req.FileRequest;
 import INT365.webappchatbot.Services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -30,7 +31,7 @@ public class FileController {
     }
 
     @GetMapping("/viewImage/{chatId}/{historyId}")
-    public Object viewImage(@PathVariable("chatId") Long chatId, @PathVariable("historyId") Long historyId) {
+    public Resource viewImage(@PathVariable("chatId") Long chatId, @PathVariable("historyId") Long historyId) {
         return this.fileService.getImageBytes(chatId, historyId);
     }
 }

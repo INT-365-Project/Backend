@@ -4,6 +4,8 @@ import INT365.webappchatbot.Entities.ChatHistory;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -73,11 +75,12 @@ public class FileService {
         return base64;
     }
 
-    public byte[] getImageBytes(Long chatId, Long historyId) {
+    public Resource getImageBytes(Long chatId, Long historyId) {
         ChatHistory chatHistory = chatHistoryRepository.findChatHistoriesEntityByChatId(chatId).stream().filter(history -> Objects.equals(history.getHistoryId(), historyId)).collect(Collectors.toList()).get(0);
-        byte[] bytes = null;
+        Resource bytes = null;
         try {
-            bytes = FileUtils.readFileToByteArray(new File(chatHistory.getMessage()));
+//            bytes = FileUtils.readFileToByteArray(new File(chatHistory.getMessage()));  // return byte[]
+            bytes = new UrlResource(new File(chatHistory.getMessage()).toPath().toUri()); // return Resource
         } catch (IOException e) {
             e.printStackTrace();
         }
