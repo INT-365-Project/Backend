@@ -124,7 +124,8 @@ public class ChatService {
             request.setMessages(webhookMessageList);
             this.externalService.pushMessage(request); // for deploy
             message.setChatId(chat.getChatId());
-            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : this.externalService.getUserProfile(chat.getName2()).getDisplayName());
+//            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : this.externalService.getUserProfile(chat.getName2()).getDisplayName());
+            message.setDisplayName(this.externalService.getUserProfile(chat.getName2()).getDisplayName());
             // ^ for deploy
 //            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : chat.getName2());
             // ^ for local
