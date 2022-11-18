@@ -129,8 +129,8 @@ public class ChatService {
             // ^ for deploy
 //            message.setDisplayName(message.getSenderName().equals("admin") ? "admin" : chat.getName2());
             // ^ for local
-            Map<String,Object> map = new HashMap<>();
-            map.put("message",message);
+            Map<String, Object> map = new HashMap<>();
+            map.put("message", message);
             map.put("history", this.chatHistoryRepository.findChatHistoriesEntityByChatId(chat.getChatId()));
             return map;
         }
@@ -213,5 +213,14 @@ public class ChatService {
             chatHistory.setIsRead(1);
             this.chatHistoryRepository.saveAndFlush(chatHistory);
         }
+    }
+
+    public void setBotResponse(Message message) {
+        Chat chat = chatRepository.findChatBySenderAndReceiverName(message.getSenderName(), message.getReceiverName());
+        if (chat == null) {
+            return;
+        }
+        chat.setIsBotResponse(Integer.getInteger(message.getMessage()));
+        this.chatRepository.saveAndFlush(chat);
     }
 }

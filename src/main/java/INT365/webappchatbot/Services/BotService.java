@@ -16,6 +16,7 @@ import INT365.webappchatbot.Repositories.BotRepository;
 import INT365.webappchatbot.Repositories.ResponseRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,6 +32,10 @@ public class BotService {
     private BotRepository botRepository;
     @Autowired
     private ResponseRepository responseRepository;
+    @Autowired
+    private FileService fileService;
+    @Value("${http.image.path}")
+    private String url;
     private final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     @Transactional
@@ -56,8 +61,18 @@ public class BotService {
                     res.setName(this.randomName());
                     res.setTopic(topic);
                     res.setTopicName(name);
-                    res.setResponseType(response.getType());
-                    res.setResponse(response.getContent());
+                    if (response.getType().equals(WebhookMessageType.TEXT.getType())) {
+                        res.setResponseType(WebhookMessageType.TEXT.getType());
+                        res.setResponse(response.getContent());
+                    }
+                    if (response.getType().equals(WebhookMessageType.IMAGE.getType())) {
+                        String base64 = response.getContent();
+                        String imageExtension = base64.substring(base64.indexOf("/") + 1, base64.indexOf(";", 0));
+                        String randomNumber = Tools.randomFileNameNumber();
+                        String filePath = this.fileService.uploadFile(randomNumber, base64.split(",", 0)[1], randomNumber + "." + imageExtension, "bot").get("filePath");
+                        res.setResponseType(WebhookMessageType.IMAGE.getType());
+                        res.setResponse(filePath);
+                    }
                     res.setSeq(response.getSeq());
                     this.responseRepository.saveAndFlush(res);
                 }
@@ -128,8 +143,15 @@ public class BotService {
                     msgResponse.setTo(userId);
                     for (Response response : this.getResponseFromText(message.getText())) {
                         WebhookMessage sendingMessage = new WebhookMessage();
-                        sendingMessage.setType(response.getResponseType());
-                        sendingMessage.setText(response.getResponse());
+                        if (response.getResponseType().equals(WebhookMessageType.TEXT.getType())) {
+                            sendingMessage.setType(response.getResponseType());
+                            sendingMessage.setText(response.getResponse());
+                        }
+                        if (response.getResponseType().equals(WebhookMessageType.IMAGE.getType())) {
+                            sendingMessage.setType(response.getResponseType());
+                            sendingMessage.setPreviewImageUrl(url + response.getName());
+                            sendingMessage.setOriginalContentUrl(url + response.getName());
+                        }
                         messages.add(sendingMessage);
                     }
                     msgResponse.setMessages(messages);
@@ -146,8 +168,8 @@ public class BotService {
 
     private List<Response> getResponseFromText(String text) {
         List<Bot> filteredExpression = this.botRepository.findAll().isEmpty() ? new ArrayList<>() : this.botRepository.findAll().stream().filter((expression) -> expression.getExpression().contains(text) || text.contains(expression.getExpression())).collect(Collectors.toList());
+        List<Response> responseList = new ArrayList<>();
         if (filteredExpression.size() == 0) {
-            List<Response> responseList = new ArrayList<>();
             Response response = new Response();
             response.setResponseType("text");
             response.setResponse("ขอโทษค่ะ อะไรนะคะ");
@@ -155,8 +177,12 @@ public class BotService {
             responseList.add(response);
             return responseList;
 //            return this.responseRepository.findResponsesByTopic("ไม่มีหัวข้อ");
+        } else {
+            for (Bot bot : filteredExpression) {
+                responseList.addAll(this.responseRepository.findResponsesByTopic(bot.getTopic()));
+            }
         }
-        return this.responseRepository.findResponsesByTopic(filteredExpression.get(0).getTopic());
+        return responseList;
     }
 
     public List<TopicResponse> getAllTopics() {

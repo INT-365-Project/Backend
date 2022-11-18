@@ -16,6 +16,8 @@ public interface ResponseRepository extends JpaRepository<Response, Long> {
 
     List<Response> findResponsesByTopic(String topic);
 
+    Response findResponseByName(String name);
+
     @Modifying
     @Query("delete from Response r where r.topicName = :topicName")
     void deleteResponsesByTopicName(@Param("topicName") String topicName);

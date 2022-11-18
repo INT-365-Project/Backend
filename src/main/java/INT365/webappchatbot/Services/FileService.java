@@ -1,14 +1,19 @@
 package INT365.webappchatbot.Services;
 
 import INT365.webappchatbot.Entities.ChatHistory;
+import INT365.webappchatbot.Entities.Response;
 import INT365.webappchatbot.Repositories.ChatHistoryRepository;
+import INT365.webappchatbot.Repositories.ResponseRepository;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,6 +32,9 @@ public class FileService {
     private String path;
     private final String profilePath = "/profile/";
     private final String chatPath = "/chat/";
+    private final String botPath = "/bot/";
+    @Autowired
+    private ResponseRepository responseRepository;
     @Autowired
     private ChatHistoryRepository chatHistoryRepository;
 
@@ -35,7 +43,19 @@ public class FileService {
         Map<String, String> map = new HashMap<>();
         try {
 //            String filePath = new File(".").getCanonicalPath() + (type.equals("news") ? this.profilePath : this.chatPath) + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
-            String filePath = this.path + (type.equals("news") ? this.profilePath : this.chatPath) + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
+            String typePath = "";
+            switch (type) {
+                case "news":
+                    typePath = this.profilePath;
+                    break;
+                case "chat":
+                    typePath = this.chatPath;
+                    break;
+                case "bot":
+                    typePath = this.botPath;
+                    break;
+            }
+            String filePath = this.path + (typePath) + fileName + originalFileName.substring(originalFileName.lastIndexOf("."));
             byte[] decodedBytes = Base64.getDecoder().decode(base64);
             Path path = Paths.get(filePath);
             Files.createDirectories(path.getParent());
@@ -85,6 +105,22 @@ public class FileService {
         try {
             bytes = FileUtils.readFileToByteArray(new File(this.path + chatHistory.getMessage()));  // return byte[]
 //            bytes = new UrlResource(new File(chatHistory.getMessage()).toPath().toUri()); // return Resource
+        } catch (FileNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "chat Id and history Id do not match");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
+    }
+
+    public byte[] getImageBytes(String name) {
+        Response response = this.responseRepository.findResponseByName(name);
+        byte[] bytes = null;
+        try {
+            bytes = FileUtils.readFileToByteArray(new File(this.path + response.getResponse()));  // return byte[]
+//            bytes = new UrlResource(new File(chatHistory.getMessage()).toPath().toUri()); // return Resource
+        } catch (FileNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name does not match");
         } catch (IOException e) {
             e.printStackTrace();
         }
