@@ -165,7 +165,16 @@ public class BotService {
                     responseObjectList.add(msgResponse);
                 }
             } else if (event.getType().equals(WebhookMessageType.FOLLOW.getType())) {
-
+                SendingMessageRequest msgResponse = new SendingMessageRequest();
+                List<WebhookMessage> messages = new ArrayList<>();
+                msgResponse.setReplyToken(replyToken);
+                msgResponse.setTo(userId);
+                WebhookMessage sendingMessage = new WebhookMessage();
+                sendingMessage.setType(WebhookMessageType.TEXT.getType());
+                sendingMessage.setText("ยินดีต้อนรับเข้าสู่ SIT-CHATBOT นะคะ");
+                messages.add(sendingMessage);
+                msgResponse.setMessages(messages);
+                responseObjectList.add(msgResponse);
             } else if (event.getType().equals(WebhookMessageType.UNFOLLOW.getType())) {
 
             }
