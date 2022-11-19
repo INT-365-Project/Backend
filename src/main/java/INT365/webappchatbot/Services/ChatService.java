@@ -220,7 +220,7 @@ public class ChatService {
         if (chat == null) {
             return;
         }
-        chat.setIsBotResponse(Integer.getInteger(message.getMessage()));
+        chat.setIsBotResponse(Integer.getInteger(message.getMessage()) == 1 ? 1 : 0);
         this.chatRepository.saveAndFlush(chat);
     }
 }
