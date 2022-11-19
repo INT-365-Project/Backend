@@ -294,6 +294,31 @@ public class WebhookService {
                     this.chatHistoryRepository.saveAndFlush(history);
                     this.sendMessageToWebApp(chat, history, "admin");
                 }
+                else if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
+                    // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
+                    // chat detail
+                    Chat chat = this.chatRepository.findChatBySenderAndReceiverName("admin", userId) == null ? new Chat() : this.chatRepository.findChatBySenderAndReceiverName("admin", userId);
+                    if (chat.getChatId() == null) {
+                        chat.setName1("admin");
+                        chat.setName2(userId);
+                        chat.setCreateDate(new Date());
+                        chat = this.chatRepository.saveAndFlush(chat);
+                    }
+                    // chat history detail
+                    ChatHistory history = new ChatHistory();
+                    history.setChatId(chat.getChatId());
+                    history.setReceiverName(userId);
+                    history.setSenderName("admin");
+                    history.setType(WebhookMessageType.IMAGE.getType());
+                    history.setIsRead(1);
+                    // only text
+                    history.setMessage(message.getText());
+                    history.setPreviewImageUrl(message.getPreviewImageUrl());
+                    history.setOriginalContentUrl(message.getOriginalContentUrl());
+                    history.setSentDate(new Date());
+                    this.chatHistoryRepository.saveAndFlush(history);
+                    this.sendMessageToWebApp(chat, history, "admin");
+                }
             }
         }
     }

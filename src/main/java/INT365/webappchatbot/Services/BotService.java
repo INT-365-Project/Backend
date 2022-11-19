@@ -148,6 +148,7 @@ public class BotService {
                             sendingMessage.setText(response.getResponse());
                         }
                         if (response.getResponseType().equals(WebhookMessageType.IMAGE.getType())) {
+                            sendingMessage.setText(response.getResponse());
                             sendingMessage.setType(response.getResponseType());
                             sendingMessage.setPreviewImageUrl(url + response.getName());
                             sendingMessage.setOriginalContentUrl(url + response.getName());
