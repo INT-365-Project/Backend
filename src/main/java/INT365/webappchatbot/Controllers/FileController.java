@@ -40,6 +40,6 @@ public class FileController {
 
     @GetMapping("/viewImage/{name}")
     public ResponseEntity<Object> viewBotImage(@PathVariable("name") String name) {
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(this.fileService.getImageBytes(name));
+        return this.fileService.getImageBytes(name);
     }
 }

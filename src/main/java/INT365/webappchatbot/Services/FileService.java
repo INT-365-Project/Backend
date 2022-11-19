@@ -8,6 +8,8 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -62,7 +64,7 @@ public class FileService {
             Files.createFile(path);
             FileOutputStream outputStream = new FileOutputStream(filePath);
             outputStream.write(decodedBytes);
-            map.put("filePath", (type.equals("news") ? this.profilePath : this.chatPath) + fileName + originalFileName.substring(originalFileName.lastIndexOf(".")));
+            map.put("filePath", (typePath) + fileName + originalFileName.substring(originalFileName.lastIndexOf(".")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,6 +103,8 @@ public class FileService {
 
     public byte[] getImageBytes(Long chatId, Long historyId) {
         ChatHistory chatHistory = chatHistoryRepository.findChatHistoriesEntityByChatId(chatId).stream().filter(history -> Objects.equals(history.getHistoryId(), historyId)).collect(Collectors.toList()).get(0);
+        if (chatHistory == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "chat Id and history Id do not match");
         byte[] bytes = null;
         try {
             bytes = FileUtils.readFileToByteArray(new File(this.path + chatHistory.getMessage()));  // return byte[]
@@ -113,8 +117,9 @@ public class FileService {
         return bytes;
     }
 
-    public byte[] getImageBytes(String name) {
+    public ResponseEntity<Object> getImageBytes(String name) {
         Response response = this.responseRepository.findResponseByName(name);
+        if (response == null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name does not match");
         byte[] bytes = null;
         try {
             bytes = FileUtils.readFileToByteArray(new File(this.path + response.getResponse()));  // return byte[]
@@ -124,7 +129,16 @@ public class FileService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return bytes;
+        MediaType mediaType = MediaType.IMAGE_JPEG;
+        switch (response.getResponse().substring(response.getResponse().lastIndexOf("."))) {
+            case ".png":
+                mediaType = MediaType.IMAGE_PNG;
+                break;
+            case ".gif":
+                mediaType = MediaType.IMAGE_GIF;
+                break;
+        }
+        return ResponseEntity.ok().contentType(mediaType).body(bytes);
     }
 
     public void deleteFile(String filePath) {
