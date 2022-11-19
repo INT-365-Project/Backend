@@ -69,7 +69,7 @@ public class BotService {
                     if (response.getType().equals(WebhookMessageType.IMAGE.getType())) {
                         if (StringUtils.isEmpty(response.getContent())) {
 //                            Response tempResponse = this.responseRepository.findResponseByName(response.getName());
-                            Response tempResponse = tempResponseList.stream().filter((resp) -> resp.getTopicName().equals(response.getName())).collect(Collectors.toList()).get(0);
+                            Response tempResponse = tempResponseList.stream().filter((resp) -> resp.getName().equals(response.getName())).collect(Collectors.toList()).get(0);
                             res.setResponseType(tempResponse.getResponseType());
                             res.setResponse(tempResponse.getResponse());
                         } else {
