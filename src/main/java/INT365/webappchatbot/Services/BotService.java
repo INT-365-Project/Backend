@@ -52,6 +52,10 @@ public class BotService {
                 String name = StringUtils.isEmpty(requestName) ? this.randomName() : requestName;
                 command.setName(name);
                 String topic = command.getTopic();
+                // delete expression and response by topic
+                List<Response> tempResponseList = this.responseRepository.findResponsesByTopicName(name);
+                this.botRepository.deleteBotsByTopicName(name);
+                this.responseRepository.deleteResponsesByTopicName(name);
                 // create new expression and response by topic
                 for (BotResponse response : command.getResponses()) {
                     Response res = new Response();
@@ -64,7 +68,8 @@ public class BotService {
                     }
                     if (response.getType().equals(WebhookMessageType.IMAGE.getType())) {
                         if (StringUtils.isEmpty(response.getContent())) {
-                            Response tempResponse = this.responseRepository.findResponseByName(response.getName());
+//                            Response tempResponse = this.responseRepository.findResponseByName(response.getName());
+                            Response tempResponse = tempResponseList.stream().filter((resp) -> resp.getTopicName().equals(response.getName())).collect(Collectors.toList()).get(0);
                             res.setResponseType(tempResponse.getResponseType());
                             res.setResponse(tempResponse.getResponse());
                         } else {
@@ -87,9 +92,6 @@ public class BotService {
                     bot.setTopicName(name);
                     this.botRepository.saveAndFlush(bot);
                 }
-                // delete expression and response by topic
-                this.botRepository.deleteBotsByTopicName(name);
-                this.responseRepository.deleteResponsesByTopicName(name);
             }
             return request;
         }
