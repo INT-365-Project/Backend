@@ -52,9 +52,6 @@ public class BotService {
                 String name = StringUtils.isEmpty(requestName) ? this.randomName() : requestName;
                 command.setName(name);
                 String topic = command.getTopic();
-                // delete expression and response by topic
-                this.botRepository.deleteBotsByTopicName(name);
-                this.responseRepository.deleteResponsesByTopicName(name);
                 // create new expression and response by topic
                 for (BotResponse response : command.getResponses()) {
                     Response res = new Response();
@@ -66,12 +63,18 @@ public class BotService {
                         res.setResponse(response.getContent());
                     }
                     if (response.getType().equals(WebhookMessageType.IMAGE.getType())) {
-                        String base64 = response.getContent();
-                        String imageExtension = base64.substring(base64.indexOf("/") + 1, base64.indexOf(";", 0));
-                        String randomNumber = Tools.randomFileNameNumber();
-                        String filePath = this.fileService.uploadFile(randomNumber, base64.split(",", 0)[1], randomNumber + "." + imageExtension, "bot").get("filePath");
-                        res.setResponseType(WebhookMessageType.IMAGE.getType());
-                        res.setResponse(filePath);
+                        if (StringUtils.isEmpty(response.getContent())) {
+                            Response tempResponse = this.responseRepository.findResponseByName(response.getName());
+                            res.setResponseType(tempResponse.getResponseType());
+                            res.setResponse(tempResponse.getResponse());
+                        } else {
+                            String base64 = response.getContent();
+                            String imageExtension = base64.substring(base64.indexOf("/") + 1, base64.indexOf(";", 0));
+                            String randomNumber = Tools.randomFileNameNumber();
+                            String filePath = this.fileService.uploadFile(randomNumber, base64.split(",", 0)[1], randomNumber + "." + imageExtension, "bot").get("filePath");
+                            res.setResponseType(WebhookMessageType.IMAGE.getType());
+                            res.setResponse(filePath);
+                        }
                     }
                     res.setSeq(response.getSeq());
                     this.responseRepository.saveAndFlush(res);
@@ -84,6 +87,9 @@ public class BotService {
                     bot.setTopicName(name);
                     this.botRepository.saveAndFlush(bot);
                 }
+                // delete expression and response by topic
+                this.botRepository.deleteBotsByTopicName(name);
+                this.responseRepository.deleteResponsesByTopicName(name);
             }
             return request;
         }
