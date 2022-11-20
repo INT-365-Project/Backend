@@ -208,12 +208,13 @@ public class BotService {
         }
         if (text.equals(getAllTopicMessage)) {
             int count = 0;
+            List<TopicResponse> topicList = this.getAllTopics();
             StringBuilder builder = new StringBuilder();
             builder.append("ผู้ใช้งานสามารถใช้งานข้อมูลต่างๆ ที่มีอยู่ในระบบได้จากการพิมพ์คีย์เวิดจากลิสด้านล่างได้เลยค่ะ\n");
             Response response = new Response();
             response.setResponseType("text");
-            for (TopicResponse topic : this.getAllTopics()) {
-                builder.append(count + 1).append(". ").append(topic.getTopic()).append("\n");
+            for (TopicResponse topic : topicList) {
+                builder.append(count + 1).append(". ").append(topic.getTopic()).append(topicList.indexOf(topic) == topicList.size() - 1 ? "" : "\n");
                 count++;
             }
             response.setResponse(builder.toString());
