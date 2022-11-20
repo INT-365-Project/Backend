@@ -190,7 +190,7 @@ public class BotService {
     private List<Response> getResponseFromText(String text, Boolean isConfirm) {
         List<Bot> filteredExpression = this.botRepository.findAll().isEmpty() ? new ArrayList<>() : this.botRepository.findAll().stream().filter((expression) -> expression.getExpression().contains(text) || text.contains(expression.getExpression())).collect(Collectors.toList());
         List<Response> responseList = new ArrayList<>();
-        if (isConfirm) {
+        if (isConfirm != null && isConfirm) {
             Response response = new Response();
             response.setResponseType("text");
             response.setResponse("กรุณารอสักครู่ ทีมงานจะรีบตอบกลับอย่างเร็วที่สุด");
