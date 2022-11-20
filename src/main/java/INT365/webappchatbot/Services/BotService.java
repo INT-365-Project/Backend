@@ -125,7 +125,7 @@ public class BotService {
                 BotResponse res = new BotResponse();
                 res.setName(response.getName());
                 res.setType(response.getResponseType());
-                res.setContent(response.getResponse());
+                res.setContent(response.getResponseType().equals(WebhookMessageType.IMAGE.getType()) ? "" : response.getResponse());
                 res.setSeq(response.getSeq());
                 responseList.add(res);
             }
