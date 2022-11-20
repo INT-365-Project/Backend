@@ -17,4 +17,7 @@ public interface ChatHistoryRepository extends JpaRepository<ChatHistory, Long> 
 
     @Query("select h from ChatHistory h where h.chatId = :chatId")
     List<ChatHistory> findChatHistoriesEntityByChatId(@Param("chatId") Long chatId);
+
+    @Query("select h from ChatHistory h where h.chatId = :chatId order by h.historyId")
+    List<ChatHistory> findChatHistoriesByChatIdOrderByHistoryId(@Param("chatId") Long chatId);
 }

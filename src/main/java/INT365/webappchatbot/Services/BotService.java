@@ -38,6 +38,9 @@ public class BotService {
     private String url;
     private final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
+    private final String botTurnOffMessage = "ติดต่อผู้ดูแล"; // for deploy
+    private final String getAllTopicMessage = "รวมคำถาม"; // for deploy
+
     @Transactional
     public BotObject createExpression(BotObject request) {
         if (request.getCommands() != null) {
@@ -136,7 +139,7 @@ public class BotService {
         return object;
     }
 
-    public List<SendingMessageRequest> responseToWebhook(WebhookObject object) {
+    public List<SendingMessageRequest> responseToWebhook(WebhookObject object, Boolean isConfirm) {
         List<SendingMessageRequest> responseObjectList = new ArrayList<>();
         for (WebhookEvent event : object.getEvents()) {
             String replyToken = event.getReplyToken();
@@ -149,7 +152,7 @@ public class BotService {
                     List<WebhookMessage> messages = new ArrayList<>();
                     msgResponse.setReplyToken(replyToken);
                     msgResponse.setTo(userId);
-                    for (Response response : this.getResponseFromText(message.getText())) {
+                    for (Response response : this.getResponseFromText(message.getText(), isConfirm)) {
                         WebhookMessage sendingMessage = new WebhookMessage();
                         if (response.getResponseType().equals(WebhookMessageType.TEXT.getType())) {
                             sendingMessage.setType(response.getResponseType());
@@ -184,9 +187,39 @@ public class BotService {
         return responseObjectList;
     }
 
-    private List<Response> getResponseFromText(String text) {
+    private List<Response> getResponseFromText(String text, Boolean isConfirm) {
         List<Bot> filteredExpression = this.botRepository.findAll().isEmpty() ? new ArrayList<>() : this.botRepository.findAll().stream().filter((expression) -> expression.getExpression().contains(text) || text.contains(expression.getExpression())).collect(Collectors.toList());
         List<Response> responseList = new ArrayList<>();
+        if (text.equals(botTurnOffMessage) && isConfirm) {
+            Response response = new Response();
+            response.setResponseType("text");
+            response.setResponse("กรุณารอสักครู่ ทีมงานจะรีบตอบกลับอย่างเร็วที่สุด");
+            response.setSeq(0);
+            responseList.add(response);
+            return responseList;
+        } else if (text.equals(botTurnOffMessage)) {
+            Response response = new Response();
+            response.setResponseType("text");
+            response.setResponse("กรุณาพิมพ์ 'ยืนยัน'\nเมื่อพิมพ์ยืนยันระบบจะทำการปิดการใช้งานแชทบอท และต้องรอทีมงานมาเปิดอีกครั้ง");
+            response.setSeq(0);
+            responseList.add(response);
+            return responseList;
+        }
+        if (text.equals(getAllTopicMessage)) {
+            int count = 0;
+            StringBuilder builder = new StringBuilder();
+            builder.append("ผู้ใช้งานสามารถใช้งานข้อมูลต่างๆ ที่มีอยู่ในระบบได้จากการพิมพ์คีย์เวิดจากลิสด้านล่างได้เลยค่ะ\n");
+            Response response = new Response();
+            response.setResponseType("text");
+            for (TopicResponse topic : this.getAllTopics()) {
+                builder.append(count+1).append(". ").append(topic.getTopic()).append("\n");
+                count++;
+            }
+            response.setResponse(builder.toString());
+            response.setSeq(0);
+            responseList.add(response);
+            return responseList;
+        }
         if (filteredExpression.size() == 0) {
             Response response = new Response();
             response.setResponseType("text");

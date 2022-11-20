@@ -44,15 +44,19 @@ public class WebhookService {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
     private final String botTurnOnMessage = "เปิดการใช้งานระบบตอบอัตโนมัติ";
-    private final String botTurnOffMessage = "ปิดการใช้งานระบบตอบอัตโนมัติ"; // for deploy
+    private final String botTurnOffMessage = "ติดต่อผู้ดูแล"; // for deploy
+    private final String confirmMessage = "ยืนยัน"; // for deploy
+
     //    private final String botTurnOffMessage = "ปิด"; // for deploy
 
     public Object webhookMessageAPI(WebhookObject request) {
         // save message to chat history that send from user
-        Boolean isBotResponse = this.saveMessageFromLine(request);
-        if (!isBotResponse) return null;
+        Map<String,Boolean> map = this.saveMessageFromLine(request);
+        Boolean isBotResponse = map.get("isBotResponse");
+        Boolean isConfirm =  map.get("isConfirm");
+        if (!isBotResponse && (isConfirm == null)) return null;
         // use bot flow
-        List<SendingMessageRequest> response = this.botService.responseToWebhook(request);
+        List<SendingMessageRequest> response = this.botService.responseToWebhook(request,isConfirm);
         // save message to chat history that send back to user
         this.saveMessageFromBot(response);
         // return webhook object to line api
@@ -62,8 +66,10 @@ public class WebhookService {
     }
 
     @Transactional
-    private Boolean saveMessageFromLine(WebhookObject request) {
+    private Map<String, Boolean> saveMessageFromLine(WebhookObject request) {
         Boolean isBotResponse = true;
+        Boolean isConfirm = null;
+        Map<String, Boolean> map = new HashMap<>();
         for (WebhookEvent event : request.getEvents()) {
             if (event.getMessage() != null) {
                 String userId = event.getSource().getType().equals("user") ? event.getSource().getUserId() : null;
@@ -74,13 +80,20 @@ public class WebhookService {
                     String message = event.getMessage().getText();
                     Chat chat = this.chatRepository.findChatBySenderAndReceiverName("admin", userId) == null ? new Chat() : this.chatRepository.findChatBySenderAndReceiverName("admin", userId);
                     boolean isChatNull = chat.getChatId() == null;
-                    if (chat.getChatId() == null) {
+                    if (isChatNull) {
                         chat.setName1("admin");
                         chat.setName2(userId);
                         chat.setCreateDate(new Date());
                         chat.setIsBotResponse(1);
                     }
-                    chat.setIsBotResponse(message.equals(this.botTurnOnMessage) ? 1 : message.equals(this.botTurnOffMessage) ? 0 : chat.getIsBotResponse());
+                    // check is user confirm to disable auto answer bot with confirm message
+                    if (!isChatNull) {
+                        List<ChatHistory> chatHistoryList = this.chatHistoryRepository.findChatHistoriesByChatIdOrderByHistoryId(chat.getChatId());
+                        if (message.equals(this.confirmMessage)) {
+                            isConfirm = chatHistoryList.get(chatHistoryList.size() - 1).getMessage().equals(this.botTurnOffMessage);
+                            chat.setIsBotResponse(isConfirm ? 0 : chat.getIsBotResponse());
+                        }
+                    }
                     chat = this.chatRepository.saveAndFlush(chat);
                     isBotResponse = Tools.convertIntToBoolean(chat.getIsBotResponse());
                     // chat history detail
@@ -196,7 +209,9 @@ public class WebhookService {
                 }
             }
         }
-        return isBotResponse;
+        map.put("isBotResponse",isBotResponse);
+        map.put("isConfirm",isConfirm);
+        return map;
     }
 
     private String convertRawMessageToEmojiFormMessage(String message, List<WebhookEmoji> emojis) {
@@ -293,8 +308,7 @@ public class WebhookService {
                     history.setSentDate(new Date());
                     this.chatHistoryRepository.saveAndFlush(history);
                     this.sendMessageToWebApp(chat, history, "admin");
-                }
-                else if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
+                } else if (message.getType().equals(WebhookMessageType.IMAGE.getType())) {
                     // save detail to database (message, sourceUserId, targetUserId, date, detail of message)
                     // chat detail
                     Chat chat = this.chatRepository.findChatBySenderAndReceiverName("admin", userId) == null ? new Chat() : this.chatRepository.findChatBySenderAndReceiverName("admin", userId);
@@ -336,8 +350,8 @@ public class WebhookService {
         message.setOriginalContentUrl(chatHistory.getOriginalContentUrl());
         message.setPreviewImageUrl(chatHistory.getPreviewImageUrl());
         message.setDisplayName(displayName);
-        Map<String,Object> map = new HashMap<>();
-        map.put("message",message);
+        Map<String, Object> map = new HashMap<>();
+        map.put("message", message);
         map.put("history", this.chatHistoryRepository.findChatHistoriesEntityByChatId(chat.getChatId()));
         simpMessagingTemplate.convertAndSendToUser(chat.getName2(), "/private", map);
     }

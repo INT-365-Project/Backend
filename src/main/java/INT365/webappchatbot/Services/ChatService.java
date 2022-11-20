@@ -158,6 +158,7 @@ public class ChatService {
 //            String displayName = chat.getName2(); // for local
             chatObject.setChatId(chat.getChatId());
             chatObject.setUserId(chat.getName2());
+            chatObject.setIsBotResponse(Tools.convertIntToBoolean(chat.getIsBotResponse()));
             chatObject.setDisplayName(displayName);
             chatObject.setImageUrl(userProfile.getPictureUrl()); // for deploy
 //            chatObject.setImageUrl("url"); // for local
@@ -186,6 +187,7 @@ public class ChatService {
         response.setDisplayName(displayName);
         response.setUserId(chat.getName2());
         response.setChatId(chat.getChatId());
+        response.setIsBotResponse(Tools.convertIntToBoolean(chat.getIsBotResponse()));
         response.setImageUrl(imageUrl);
         List<ChatHistoryObject> chatHistoryList = new ArrayList<>();
         for (ChatHistoryResponse chatHistory : this.chatHistoryRepository.findChatHistoriesByChatId(chat.getChatId())) {

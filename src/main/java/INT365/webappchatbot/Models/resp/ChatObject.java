@@ -10,5 +10,6 @@ public class ChatObject {
     private String userId;
     private String displayName;
     private String imageUrl;
+    private Boolean isBotResponse;
     private List<ChatHistoryObject> chatHistory;
 }
