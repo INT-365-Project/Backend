@@ -88,8 +88,8 @@ public class WebhookService {
                     }
                     // check is user confirm to disable auto answer bot with confirm message
                     if (!isChatNull) {
-                        List<ChatHistory> chatHistoryList = this.chatHistoryRepository.findChatHistoriesByChatIdOrderByHistoryId(chat.getChatId());
                         if (message.equals(this.confirmMessage)) {
+                            List<ChatHistory> chatHistoryList = this.chatHistoryRepository.findChatHistoriesByChatIdOrderByHistoryId(chat.getChatId());
                             isConfirm = chatHistoryList.get(chatHistoryList.size() - 1).getMessage().equals(this.botTurnOffMessage);
                             chat.setIsBotResponse(isConfirm ? 0 : chat.getIsBotResponse());
                         }

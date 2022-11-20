@@ -190,14 +190,15 @@ public class BotService {
     private List<Response> getResponseFromText(String text, Boolean isConfirm) {
         List<Bot> filteredExpression = this.botRepository.findAll().isEmpty() ? new ArrayList<>() : this.botRepository.findAll().stream().filter((expression) -> expression.getExpression().contains(text) || text.contains(expression.getExpression())).collect(Collectors.toList());
         List<Response> responseList = new ArrayList<>();
-        if (text.equals(botTurnOffMessage) && isConfirm) {
+        if (isConfirm) {
             Response response = new Response();
             response.setResponseType("text");
             response.setResponse("กรุณารอสักครู่ ทีมงานจะรีบตอบกลับอย่างเร็วที่สุด");
             response.setSeq(0);
             responseList.add(response);
             return responseList;
-        } else if (text.equals(botTurnOffMessage)) {
+        }
+        if (text.equals(botTurnOffMessage)) {
             Response response = new Response();
             response.setResponseType("text");
             response.setResponse("กรุณาพิมพ์ 'ยืนยัน'\nเมื่อพิมพ์ยืนยันระบบจะทำการปิดการใช้งานแชทบอท และต้องรอทีมงานมาเปิดอีกครั้ง");
@@ -212,7 +213,7 @@ public class BotService {
             Response response = new Response();
             response.setResponseType("text");
             for (TopicResponse topic : this.getAllTopics()) {
-                builder.append(count+1).append(". ").append(topic.getTopic()).append("\n");
+                builder.append(count + 1).append(". ").append(topic.getTopic()).append("\n");
                 count++;
             }
             response.setResponse(builder.toString());
