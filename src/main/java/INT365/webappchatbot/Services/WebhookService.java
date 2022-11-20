@@ -90,7 +90,7 @@ public class WebhookService {
                     if (!isChatNull) {
                         if (message.equals(this.confirmMessage)) {
                             List<ChatHistory> chatHistoryList = this.chatHistoryRepository.findChatHistoriesByChatIdOrderByHistoryId(chat.getChatId());
-                            isConfirm = chatHistoryList.get(chatHistoryList.size() - 1).getMessage().equals(this.botTurnOffMessage);
+                            isConfirm = chatHistoryList.get(chatHistoryList.size() - 2).getMessage().equals(this.botTurnOffMessage);
                             chat.setIsBotResponse(isConfirm ? 0 : chat.getIsBotResponse());
                         }
                     }
