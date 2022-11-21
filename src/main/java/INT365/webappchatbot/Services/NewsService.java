@@ -37,7 +37,7 @@ public class NewsService {
                 this.fileService.deleteFile(news.getThumbnailPath());
                 news.setThumbnailPath(null);
             }
-            Map<String, String> map = this.fileService.uploadFile(news.getNewId().toString(), request.getThumbnailFile(), request.getThumbnailFileName(),"news");
+            Map<String, String> map = this.fileService.uploadFile(Tools.randomFileNameNumber(), request.getThumbnailFile(), request.getThumbnailFileName(),"news");
             news.setThumbnailPath(map.get("filePath"));
             this.newsRepository.saveAndFlush(news);
 //            this.newsRepository.updateNewsFilePathByNewsId(news.getNewId(), map.get("filePath"));
