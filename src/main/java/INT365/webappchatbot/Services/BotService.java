@@ -188,7 +188,16 @@ public class BotService {
     }
 
     private List<Response> getResponseFromText(String text, Boolean isConfirm) {
-        List<Bot> filteredExpression = this.botRepository.findAll().isEmpty() ? new ArrayList<>() : this.botRepository.findAll().stream().filter((expression) -> expression.getExpression().contains(text) || text.contains(expression.getExpression())).collect(Collectors.toList());
+        List<Bot> filteredExpression = this.botRepository.findAll().isEmpty() ? new ArrayList<>() : this.botRepository.findAll().stream().filter((expression) -> text.contains(expression.getExpression())).collect(Collectors.toList());
+        List<String> nonDuplicatedTopicNameList = new ArrayList<>();
+        if (filteredExpression.size() > 1) {
+            for (String name : filteredExpression.stream().map(Bot::getTopicName).collect(Collectors.toList())) {
+                if (nonDuplicatedTopicNameList.isEmpty()) nonDuplicatedTopicNameList.add(name);
+                else {
+                    if (!nonDuplicatedTopicNameList.contains(name)) nonDuplicatedTopicNameList.add(name);
+                }
+            }
+        }
         List<Response> responseList = new ArrayList<>();
         if (isConfirm != null && isConfirm) {
             Response response = new Response();
@@ -231,8 +240,8 @@ public class BotService {
             return responseList;
 //            return this.responseRepository.findResponsesByTopic("ไม่มีหัวข้อ");
         } else {
-            for (Bot bot : filteredExpression) {
-                responseList.addAll(this.responseRepository.findResponsesByTopic(bot.getTopic()));
+            for (String topicName : nonDuplicatedTopicNameList) {
+                responseList.addAll(this.responseRepository.findResponsesByTopicName(topicName));
             }
         }
         return responseList;
