@@ -142,7 +142,7 @@ public class FileService {
     }
 
     public void deleteFile(String filePath) {
-        File file = new File(filePath);
+        File file = new File(this.path + filePath);
         file.delete();
     }
 }
