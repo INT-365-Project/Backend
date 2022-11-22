@@ -148,26 +148,28 @@ public class BotService {
                 WebhookMessage message = event.getMessage();
                 // case text and message is not null
                 if (message != null && message.getType().equals("text")) {
-                    SendingMessageRequest msgResponse = new SendingMessageRequest();
-                    List<WebhookMessage> messages = new ArrayList<>();
-                    msgResponse.setReplyToken(replyToken);
-                    msgResponse.setTo(userId);
-                    for (Response response : this.getResponseFromText(message.getText(), isConfirm)) {
-                        WebhookMessage sendingMessage = new WebhookMessage();
-                        if (response.getResponseType().equals(WebhookMessageType.TEXT.getType())) {
-                            sendingMessage.setType(response.getResponseType());
-                            sendingMessage.setText(response.getResponse());
+                    for (List<Response> responseList : this.getResponseFromText(message.getText(), isConfirm)) {
+                        SendingMessageRequest msgResponse = new SendingMessageRequest();
+                        List<WebhookMessage> messages = new ArrayList<>();
+                        msgResponse.setReplyToken(replyToken);
+                        msgResponse.setTo(userId);
+                        for (Response response : responseList) {
+                            WebhookMessage sendingMessage = new WebhookMessage();
+                            if (response.getResponseType().equals(WebhookMessageType.TEXT.getType())) {
+                                sendingMessage.setType(response.getResponseType());
+                                sendingMessage.setText(response.getResponse());
+                            }
+                            if (response.getResponseType().equals(WebhookMessageType.IMAGE.getType())) {
+                                sendingMessage.setText(response.getResponse());
+                                sendingMessage.setType(response.getResponseType());
+                                sendingMessage.setPreviewImageUrl(url + response.getName());
+                                sendingMessage.setOriginalContentUrl(url + response.getName());
+                            }
+                            messages.add(sendingMessage);
                         }
-                        if (response.getResponseType().equals(WebhookMessageType.IMAGE.getType())) {
-                            sendingMessage.setText(response.getResponse());
-                            sendingMessage.setType(response.getResponseType());
-                            sendingMessage.setPreviewImageUrl(url + response.getName());
-                            sendingMessage.setOriginalContentUrl(url + response.getName());
-                        }
-                        messages.add(sendingMessage);
+                        msgResponse.setMessages(messages);
+                        responseObjectList.add(msgResponse);
                     }
-                    msgResponse.setMessages(messages);
-                    responseObjectList.add(msgResponse);
                 }
             } else if (event.getType().equals(WebhookMessageType.FOLLOW.getType())) {
                 SendingMessageRequest msgResponse = new SendingMessageRequest();
@@ -187,7 +189,7 @@ public class BotService {
         return responseObjectList;
     }
 
-    private List<Response> getResponseFromText(String text, Boolean isConfirm) {
+    private List<List<Response>> getResponseFromText(String text, Boolean isConfirm) {
         List<Bot> filteredExpression = this.botRepository.findAll().isEmpty() ? new ArrayList<>() : this.botRepository.findAll().stream().filter((expression) -> text.contains(expression.getExpression())).collect(Collectors.toList());
         List<String> nonDuplicatedTopicNameList = new ArrayList<>();
         if (filteredExpression.size() > 1) {
@@ -198,6 +200,7 @@ public class BotService {
                 }
             }
         }
+        List<List<Response>> list = new ArrayList<>();
         List<Response> responseList = new ArrayList<>();
         if (isConfirm != null && isConfirm) {
             Response response = new Response();
@@ -205,7 +208,8 @@ public class BotService {
             response.setResponse("กรุณารอสักครู่ ทีมงานจะรีบตอบกลับอย่างเร็วที่สุด");
             response.setSeq(0);
             responseList.add(response);
-            return responseList;
+            list.add(responseList);
+            return list;
         }
         if (text.equals(botTurnOffMessage)) {
             Response response = new Response();
@@ -213,7 +217,8 @@ public class BotService {
             response.setResponse("กรุณาพิมพ์ 'ยืนยัน'\nเมื่อพิมพ์ยืนยันระบบจะทำการปิดการใช้งานแชทบอท และต้องรอทีมงานมาเปิดอีกครั้ง");
             response.setSeq(0);
             responseList.add(response);
-            return responseList;
+            list.add(responseList);
+            return list;
         }
         if (text.equals(getAllTopicMessage)) {
             int count = 0;
@@ -229,7 +234,8 @@ public class BotService {
             response.setResponse(builder.toString());
             response.setSeq(0);
             responseList.add(response);
-            return responseList;
+            list.add(responseList);
+            return list;
         }
         if (filteredExpression.size() == 0) {
             Response response = new Response();
@@ -237,14 +243,16 @@ public class BotService {
             response.setResponse("ขอโทษค่ะ อะไรนะคะ");
             response.setSeq(0);
             responseList.add(response);
-            return responseList;
+            list.add(responseList);
+            return list;
 //            return this.responseRepository.findResponsesByTopic("ไม่มีหัวข้อ");
         } else {
             for (String topicName : (nonDuplicatedTopicNameList.size() == 0 ? filteredExpression.stream().map(Bot::getTopicName).collect(Collectors.toList()) : nonDuplicatedTopicNameList)) {
                 responseList.addAll(this.responseRepository.findResponsesByTopicName(topicName));
+                list.add(responseList);
             }
         }
-        return responseList;
+        return list;
     }
 
     public List<TopicResponse> getAllTopics() {
