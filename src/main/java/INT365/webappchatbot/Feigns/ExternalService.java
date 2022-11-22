@@ -43,7 +43,7 @@ public class ExternalService {
                 httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
                 httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + this.channelAccessToken);
                 HttpEntity<SendingMessageRequest> entity = new HttpEntity<>(message, httpHeaders);
-                this.restTemplate.postForObject(this.lineReplyMessagingApi, entity, Object.class);
+                this.restTemplate.postForObject(this.linePushMessagingApi, entity, Object.class);
             }
         }
     }
