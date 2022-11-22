@@ -248,8 +248,7 @@ public class BotService {
 //            return this.responseRepository.findResponsesByTopic("ไม่มีหัวข้อ");
         } else {
             for (String topicName : (nonDuplicatedTopicNameList.size() == 0 ? filteredExpression.stream().map(Bot::getTopicName).collect(Collectors.toList()) : nonDuplicatedTopicNameList)) {
-                responseList.addAll(this.responseRepository.findResponsesByTopicName(topicName));
-                list.add(responseList);
+                list.add(this.responseRepository.findResponsesByTopicName(topicName));
             }
         }
         return list;
