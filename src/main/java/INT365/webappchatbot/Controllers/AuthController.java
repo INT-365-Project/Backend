@@ -33,9 +33,9 @@ public class AuthController {
             user.setUserId(1L);
             user.setUsername("admin");
             user.setTitleNameTh("นาย");
-            user.setFirstNameTh("สมหมาย");
-            user.setLastNameTh("ระม้ายคล้ายคลึง");
-            user.setFullName("นายสมหมาย ระม้ายคล้ายคลึง");
+            user.setFirstNameTh("ภีมภัทร์");
+            user.setLastNameTh("ปิ่นแสง");
+            user.setFullName("นายภีมภัทร์ ปิ่นแสง");
             List<String> roles = new ArrayList<>();
             roles.add("Admin");
             roles.add("Q&A");
