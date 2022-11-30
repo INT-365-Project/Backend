@@ -3,15 +3,14 @@ package INT365.webappchatbot.Controllers;
 import INT365.webappchatbot.Configs.JwtTokenUtils;
 import INT365.webappchatbot.Models.JwtRequest;
 import INT365.webappchatbot.Models.JwtResponse;
-import INT365.webappchatbot.Models.UserModelDetail;
 import INT365.webappchatbot.Models.UserModelHeader;
-import INT365.webappchatbot.Services.JwtUserDetailService;
+import INT365.webappchatbot.Services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 // @CrossOrigin(value = "http://localhost:3000", allowedHeaders = "*")
 @RestController
@@ -21,33 +20,12 @@ public class AuthController {
     @Autowired
     private JwtTokenUtils jwtTokenUtil;
     @Autowired
-    private JwtUserDetailService userDetailService;
+    private AuthService authService;
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
-//        SSOResponse<UserModelDetail> response = externalService.getAuthentication(authenticationRequest.getUsername(), authenticationRequest.getPassword());
-//        if (response.getResponseCode().equals("OK")) {
-        // check if user exist
-        if (authenticationRequest.getUsername().equals("admin")) {
-            UserModelDetail user = new UserModelDetail();
-            user.setUserId(1L);
-            user.setUsername("admin");
-            user.setTitleNameTh("นาย");
-            user.setFirstNameTh("ภีมภัทร์");
-            user.setLastNameTh("ปิ่นแสง");
-            user.setFullName("นายภีมภัทร์ ปิ่นแสง");
-            List<String> roles = new ArrayList<>();
-            roles.add("Admin");
-            roles.add("Q&A");
-            user.setRoles(roles);
-            this.userDetailService.createUser(authenticationRequest, user);
-//        this.userDetailService.createUser(authenticationRequest, response.getResponseData());
-        }
-//        userDetailService.loadUserByUsername(authenticationRequest.getUsername());
-        UserModelDetail userModelDetail = userDetailService.findUserByUsername(authenticationRequest.getUsername());
-        UserModelHeader userModelHeader = new UserModelHeader(authenticationRequest.getUsername(), authenticationRequest.getPassword(), userDetailService.getAuthority(userModelDetail.getRoles()), userModelDetail);
+        UserModelHeader userModelHeader = authService.authenticate(authenticationRequest);
         final String token = jwtTokenUtil.generateToken(userModelHeader);
         return ResponseEntity.ok(new JwtResponse(token, userModelHeader.getUserModelDetail()));
-//        }
     }
 }
